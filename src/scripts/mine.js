@@ -1,3 +1,4 @@
+// src\scripts\mine.js
 const xhr = new XMLHttpRequest();
 const btnPlay = document.getElementById('btnPlay')
 let balance = 0;

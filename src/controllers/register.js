@@ -1,3 +1,4 @@
+// src\controllers\register.js
 const nameR = document.getElementById('name');
 const ageR = document.getElementById('age');
 const emailR = document.getElementById('email');

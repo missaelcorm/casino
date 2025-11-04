@@ -1,3 +1,4 @@
+// src\scripts\balance.js
 const xhr = new XMLHttpRequest();
 let tat;
 

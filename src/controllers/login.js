@@ -1,3 +1,4 @@
+// src\controllers\login.js
 const emailLogin = document.getElementById('email');
 const passLogin = document.getElementById('password');
 const actionLogin = document.getElementById('profiteering');

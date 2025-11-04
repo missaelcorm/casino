@@ -1,3 +1,4 @@
+// src\scripts\hi-lo.js
 const xhr = new XMLHttpRequest();
 
 document.addEventListener('DOMContentLoaded', () => {

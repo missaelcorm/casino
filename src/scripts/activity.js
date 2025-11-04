@@ -1,3 +1,4 @@
+// src\scripts\activity.js
 const xhr = new XMLHttpRequest();
 const imagesMap = new Map();
 imagesMap.set('Crash', '/assets/images/crash_car.png');

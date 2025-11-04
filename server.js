@@ -1,3 +1,4 @@
+// server.js
 // ---------- Uso de paquetes para el servidor, cors y archivos -----------
 const express = require('express'); 
 const cors = require('cors');

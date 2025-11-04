@@ -1,0 +1,20 @@
+{
+  "name": "frio-casino-frontend",
+  "version": "1.0.0",
+  "description": "Frontend para Frio Casino",
+  "scripts": {
+    "start": "npx http-server public -p 8080 -c-1",
+    "dev": "npx http-server public -p 8080 -c-1",
+    "build:css": "tailwindcss -i ./styles/input.css -o ./styles/output.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "tailwindcss": "^3.3.5"
+  },
+  "dependencies": {
+    "sweetalert2": "^11.10.1"
+  }
+}

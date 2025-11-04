@@ -1,3 +1,4 @@
+// routes\mongoose.js
 const mongoose = require('mongoose');
 // ------------- CONFIGURACIÓN DE MONGO -------------
 let mongoConnection = "mongodb+srv://admin:Casino12345@casino.whg8ina.mongodb.net/casino"

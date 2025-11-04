@@ -1,3 +1,4 @@
+// src\scripts\profile.js
 const xhr = new XMLHttpRequest();
 
 document.addEventListener('DOMContentLoaded', () => {
