@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const mongoConnection = process.env.MONGODB_URI || "mongodb+srv://admin:Casino12345@casino.whg8ina.mongodb.net/casino";
+const mongoConnection = process.env.MONGODB_URI;
 
 mongoose.connect(mongoConnection);
 
