@@ -76,7 +76,7 @@ function loadBalanceRoulette() {
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.withCredentials = true;
+
     
     xhr.onload = function() {
         if (xhr.status !== 200) {
@@ -103,7 +103,7 @@ function updateBalance(amount) {
 
     xhr.open('PUT', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.withCredentials = true;
+
     
     xhr.onload = function () {
         if (xhr.status !== 200) {
@@ -275,7 +275,7 @@ function storeActivity(balance, nameGame) {
 
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.withCredentials = true;
+
     
     xhr.onload = function () {
         if (xhr.status !== 200) {

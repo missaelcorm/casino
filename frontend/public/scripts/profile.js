@@ -5,12 +5,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadProfile() {
-    var id = sessionStorage.getItem('token');
-    var url = getApiUrl(API_CONFIG.ENDPOINTS.PROFILE) + `?id=${id}`;
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    
+    if (!token || !userId) {
+        window.location.href = 'logIn.html';
+        return;
+    }
+    
+    var url = getApiUrl(API_CONFIG.ENDPOINTS.PROFILE) + `?id=${userId}`;
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.withCredentials = true;
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
     
     xhr.onload = function() {
         if (xhr.status != 200) {
@@ -61,10 +69,11 @@ function confirm(component) {
 }
 
 function updateField(field, newValue) {
-    var id = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
 
     let data = {
-        id: id,
+        id: userId,
         field: field,
         newValue: newValue
     }
@@ -72,7 +81,8 @@ function updateField(field, newValue) {
 
     xhr.open('PUT', getApiUrl(API_CONFIG.ENDPOINTS.PROFILE), false);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.withCredentials = true;
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
     
     xhr.onload = function() {
         if (xhr.status != 200) {

@@ -17,9 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadName() {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
 
-    if (!token) {
+    if (!token || !userId) {
         return;
     }
 
@@ -27,8 +28,8 @@ function loadName() {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+            'Authorization': `Bearer ${token}`
+        }
     }).then(response => {
         if (!response.ok) {
             throw new Error('Error al obtener el nombre desde el servidor');
@@ -74,7 +75,9 @@ function goToProfile() {
 }
 
 function goToExit() {
-    sessionStorage.removeItem('token')
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    sessionStorage.removeItem('token');
     document.cookie = 'token=; Expires=0;';
     navigateToPath('index_logInPending.html');
 }

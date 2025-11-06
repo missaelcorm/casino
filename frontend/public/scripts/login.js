@@ -23,7 +23,6 @@ actionLogin.addEventListener('click', async () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
             body: JSON.stringify(credentials),
         });
 
@@ -31,8 +30,9 @@ actionLogin.addEventListener('click', async () => {
             const data = await response.json();
             const token = data.token;
             
+            localStorage.setItem('token', token);
+            localStorage.setItem('userId', data.user.id);
             document.cookie = `token=${token}; path=/`;
-            sessionStorage.setItem('token', token);
             
             window.location.href = 'index_login.html';
         } else {

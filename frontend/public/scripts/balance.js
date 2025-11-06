@@ -16,12 +16,20 @@ function showWithdrawForm() {
 }
 
 function loadBalance() {
-    var id = sessionStorage.getItem('token');
-    var url = getApiUrl(API_CONFIG.ENDPOINTS.BALANCE) + `?id=${id}`;
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    
+    if (!token || !userId) {
+        window.location.href = 'logIn.html';
+        return;
+    }
+    
+    var url = getApiUrl(API_CONFIG.ENDPOINTS.BALANCE) + `?id=${userId}`;
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.withCredentials = true;
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
     
     xhr.onload = function() {
         if (xhr.status != 200) {
@@ -42,7 +50,8 @@ function loadBalance() {
 }
 
 function addBalance() {
-    var id = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
     var amount = document.querySelector('#balance-form-deposit').value;
     amount = parseFloat(amount);
 
@@ -56,14 +65,15 @@ function addBalance() {
     }
 
     let data = {
-        id: id,
+        id: userId,
         amount: amount
     }
     data = JSON.stringify(data);
 
     xhr.open('PUT', getApiUrl(API_CONFIG.ENDPOINTS.BALANCE), false);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.withCredentials = true;
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
     
     xhr.onload = function() {
         if (xhr.status != 200) {
@@ -90,7 +100,8 @@ function addBalance() {
 }
 
 function withdrawBalance() {
-    var id = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
     var amount = document.querySelector('#balance-form-withdraw').value;
     amount = parseFloat(amount);
 
@@ -116,14 +127,15 @@ function withdrawBalance() {
     amount = -amount;
 
     let data = {
-        id: id,
+        id: userId,
         amount: amount
     }
     data = JSON.stringify(data);
 
     xhr.open('PUT', getApiUrl(API_CONFIG.ENDPOINTS.BALANCE), false);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.withCredentials = true;
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
     
     xhr.onload = function() {
         if (xhr.status != 200) {

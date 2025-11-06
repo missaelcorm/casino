@@ -34,11 +34,17 @@ actionRegister.addEventListener('click', async () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
             body: JSON.stringify(userData),
         });
 
         if (response.ok) {
+            const data = await response.json();
+            
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userId', data.user.id);
+            }
+
             Swal.fire({
                 icon: "success",
                 title: "Se ha registrado con éxito",

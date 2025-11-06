@@ -20,7 +20,7 @@ function loadActivity() {
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.withCredentials = true;
+
     
     xhr.onload = function() {
         if (xhr.status != 200) {

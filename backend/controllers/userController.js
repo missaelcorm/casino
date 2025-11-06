@@ -21,12 +21,29 @@ const updateProfile = async (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        if (field === 'username') user.name = newValue;
-        else if (field === 'password') user.password = newValue;
-        else if (field === 'email') user.email = newValue;
+        if (field === 'username') {
+            user.name = newValue;
+        } else if (field === 'password') {
+            if (newValue.length < 6) {
+                return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+            }
+            user.password = newValue;
+        } else if (field === 'email') {
+            const existingUser = await User.findOne({ email: newValue });
+            if (existingUser && existingUser._id.toString() !== id) {
+                return res.status(400).json({ error: 'El email ya está en uso' });
+            }
+            user.email = newValue;
+        } else {
+            return res.status(400).json({ error: 'Campo inválido' });
+        }
 
         const updatedUser = await user.save();
-        res.json(updatedUser);
+        
+        const userResponse = updatedUser.toObject();
+        delete userResponse.password;
+        
+        res.json(userResponse);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
