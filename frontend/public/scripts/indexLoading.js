@@ -40,7 +40,7 @@ function loadName() {
         if (textProf) {
             textProf.innerText = data.name;
         }
-    }).catch(error => console.error('Error en la solicitud al servidor:', error));
+    }).catch(error => console.error(error));
 }
 
 let defaultTransform = 0;

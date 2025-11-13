@@ -1,4 +1,3 @@
-const xhr = new XMLHttpRequest();
 const btnPlay = document.getElementById('btnPlay')
 let balance = 0;
 let cantidadApostada = 0;
@@ -36,11 +35,14 @@ const board = createTabla(boardSize, NumberMines)
 let minesLCount = document.querySelector('[data-mine-count]');
 
 function loadBalance() {
-    var id = sessionStorage.getItem('token');
+    const xhr = new XMLHttpRequest();
+    var id = localStorage.getItem('userId');
+    var token = localStorage.getItem('token');
     var url = getApiUrl(API_CONFIG.ENDPOINTS.BALANCE) + `?id=${id}`;
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
     
     xhr.onload = function() {
@@ -80,7 +82,6 @@ btnPlay.addEventListener('click', () => {
         cantidadApostada = parseFloat(cantidadMine.value);
         cantidadMine.value = '';
         
-        console.log('Nuevo juego iniciado con apuesta:', cantidadApostada);
         
         board.forEach((row) => {
             row.forEach((tile) => {
@@ -145,7 +146,45 @@ function reveal(tile) {
         return;
     }
 
-    tile.status = STATUS.NUMBER
+    tile.status = STATUS.NUMBER;
+}
+
+async function playMinesGame(won) {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.PLAY_MINES), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                userId: userId,
+                betAmount: cantidadApostada,
+                won: won
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error en el juego');
+        }
+
+        const result = await response.json();
+
+        document.querySelector('#tagBalance').innerHTML = parseFloat(result.newBalance).toFixed(2);
+
+
+
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message
+        });
+    }
 }
 
 function createTabla(boardSize, minesNumber) {
@@ -187,24 +226,12 @@ function checkGameEnd() {
         boardElement.addEventListener('contextmenu', stopProp, {capture: true})
     }
 
-    if(win) {
-        const amountWon = cantidadApostada * 2;
-        
-        console.log('Ganaste en Mines:');
-        console.log('Cantidad apostada:', cantidadApostada);
-        console.log('Ganancia:', amountWon);
-        
-        storeActivity(amountWon, "Mines");
-        updateBalance(amountWon);
+    if(win) {        
+        playMinesGame(true);
         showHasWon();
     }
     
     if(lose) {
-        const negativeValue = -cantidadApostada;
-        
-        console.log('Perdiste en Mines:');
-        console.log('Cantidad apostada:', cantidadApostada);
-        console.log('Pérdida:', negativeValue);
         
         board.forEach(row => {
             row.forEach(tile => {
@@ -217,8 +244,7 @@ function checkGameEnd() {
             })
         })
         
-        storeActivity(negativeValue, "Mines");
-        updateBalance(negativeValue);
+        playMinesGame(false);
         showHasLost();
     }
 }
@@ -254,61 +280,6 @@ function nearbyTiles(board, { x, y }) {
     }
 
     return tiles
-}
-
-function updateBalance(amount) {
-    const id = sessionStorage.getItem('token');
-    const url = getApiUrl(API_CONFIG.ENDPOINTS.BALANCE);
-
-    let data = {
-        id: id,
-        amount: amount,
-    };
-
-    xhr.open('PUT', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    
-    xhr.onload = function () {
-        if (xhr.status !== 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        } else {
-            if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
-                document.querySelector('#tagBalance').innerHTML = parseFloat(data.balance).toFixed(2);
-            }
-        }
-    };
-    xhr.send(JSON.stringify(data));
-}
-
-function storeActivity(balance, nameGame) {
-    const id = sessionStorage.getItem('token');
-    const url = getApiUrl(API_CONFIG.ENDPOINTS.ACTIVITY);
-
-    var BetStatus = false;
-    if (balance > 0) {
-        BetStatus = true;
-    }
-
-    let data = {
-        userID: id,
-        balance: balance,
-        dateGame: new Date().toISOString(),
-        nameGame: nameGame,
-        BetStatus: BetStatus
-    };
-
-    xhr.open('POST', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    
-    xhr.onload = function () {
-        if (xhr.status !== 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        }
-    };
-    xhr.send(JSON.stringify(data));
 }
 
 function checkWin(board) {

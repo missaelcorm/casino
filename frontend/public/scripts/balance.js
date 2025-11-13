@@ -1,4 +1,3 @@
-const xhr = new XMLHttpRequest();
 let tat;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,6 +15,7 @@ function showWithdrawForm() {
 }
 
 function loadBalance() {
+    const xhr = new XMLHttpRequest();
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     
@@ -50,6 +50,7 @@ function loadBalance() {
 }
 
 function addBalance() {
+    const xhr = new XMLHttpRequest();
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     var amount = document.querySelector('#balance-form-deposit').value;
@@ -100,6 +101,7 @@ function addBalance() {
 }
 
 function withdrawBalance() {
+    const xhr = new XMLHttpRequest();
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     var amount = document.querySelector('#balance-form-withdraw').value;

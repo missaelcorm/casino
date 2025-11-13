@@ -43,7 +43,6 @@ actionLogin.addEventListener('click', async () => {
             });
         }
     } catch (error) {
-        console.error('Error:', error);
         Swal.fire({
             icon: "error",
             title: "Error de conexión",

@@ -1,15 +1,16 @@
-const xhr = new XMLHttpRequest();
-
 document.addEventListener('DOMContentLoaded', () => {
     loadBalance();
 });
 
 function loadBalance() {
-    var id = sessionStorage.getItem('token');
+    const xhr = new XMLHttpRequest();
+    var id = localStorage.getItem('userId');
+    var token = localStorage.getItem('token');
     var url = getApiUrl(API_CONFIG.ENDPOINTS.BALANCE) + `?id=${id}`;
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
     
     xhr.onload = function() {
@@ -94,7 +95,6 @@ if (deck.cards[0].value === 'K' || deck.cards[0].value == 'A'){
     deck.pop();
 }
 computerCardSlot.appendChild(deck.cards[0].getHTML());
-console.log(deck.cards);
 
 const tagGanador = document.getElementById('tagBalance');
 const btnMayor = document.getElementById('btnMayor');
@@ -122,7 +122,7 @@ btnMayor.addEventListener('click', function () {
         });
     } else {
         let cantidadValue = (cantidadHiLo.value === '') ? 0 : parseFloat(cantidadHiLo.value);
-        let balanceValue = document.querySelector('#tagBalance').innerHTML;
+        let balanceValue = parseFloat(document.querySelector('#tagBalance').innerHTML);
 
         if (balanceValue < cantidadValue){
             Swal.fire({
@@ -142,7 +142,7 @@ btnMayor.addEventListener('click', function () {
             cantidadHiLo.value = '';
             return;
         }
-        balance = balance-cantidadHiLo.value;
+        
         if(deck.cards.length === 1){
             Swal.fire({
                 icon: "error",
@@ -151,68 +151,8 @@ btnMayor.addEventListener('click', function () {
             });
             return;
         }
-        let cartaVieja = deck.pop().value;
-        while (deck.cards[0].value === 'K' || deck.cards[0].value == 'A'){
-            deck.pop();
-        }
-        let cartaNueva = deck.cards[0].value;
-        if (cartaVieja == 'J' || cartaVieja == 'Q' || cartaVieja == 'K' || cartaVieja == 'A'){
-            switch (cartaVieja){
-                case 'J':
-                    cartaVieja = 11;
-                    break;
-                case 'Q':
-                    cartaVieja = 12;
-                    break;
-                case 'K':
-                    cartaVieja = 13;
-                    break;
-                case 'A':
-                    cartaVieja = 1;
-                    break
-            }
-        }
-        if (cartaNueva == 'J' || cartaNueva == 'Q' || cartaNueva == 'K' || cartaNueva == 'A'){
-            switch (cartaNueva){
-                case 'J':
-                    cartaNueva = 11;
-                    break;
-                case 'Q':
-                    cartaNueva = 12;
-                    break;
-                case 'K':
-                    cartaNueva = 13;
-                    break;
-                case 'A':
-                    cartaNueva = 1;
-                    break
-            }
-        }
-        if(cartaNueva>=cartaVieja){
-            let posibilidadesArriba = (cartaVieja/13)+1;
-            let ganancia = cantidadValue * posibilidadesArriba;
-            
-            console.log('🎉 Ganaste en Hi-Lo:');
-            console.log('   Cantidad apostada:', cantidadValue);
-            console.log('   Ganancia:', ganancia);
-            
-            storeActivity(ganancia, "Hi-Lo");
-            updateBalance(ganancia);
-            showHasWon();
-        }else{
-            let perdida = -cantidadValue;
-            
-            console.log('💔 Perdiste en Hi-Lo:');
-            console.log('   Cantidad apostada:', cantidadValue);
-            console.log('   Pérdida:', perdida);
-            
-            storeActivity(perdida, "Hi-Lo");
-            updateBalance(perdida);
-            showHasLost();
-        }
-        computerCardSlot.removeChild(cartaDinamica);
-        computerCardSlot.appendChild(deck.cards[0].getHTML());
-        cantidadHiLo.value = '';
+
+        playHiLoGame(cantidadValue, 'higher');
     }
 });
 
@@ -226,7 +166,7 @@ btnMenor.addEventListener('click', function () {
         });
     } else {
         let cantidadValue = (cantidadHiLo.value === '') ? 0  : parseFloat(cantidadHiLo.value);
-        let balanceValue = document.querySelector('#tagBalance').innerHTML;
+        let balanceValue = parseFloat(document.querySelector('#tagBalance').innerHTML);
 
         if (balanceValue < cantidadValue){
             Swal.fire({
@@ -246,7 +186,7 @@ btnMenor.addEventListener('click', function () {
             cantidadHiLo.value = '';
             return;
         }
-        balance = balance-cantidadHiLo.value;
+        
         if(deck.cards.length === 1){
             Swal.fire({
                 icon: "error",
@@ -255,123 +195,84 @@ btnMenor.addEventListener('click', function () {
             });
             return;
         }
-        let cartaVieja = deck.pop().value;
-        while (deck.cards[0].value === 'K' || deck.cards[0].value == 'A'){
-            deck.pop();
-        }
-        let cartaNueva = deck.cards[0].value;
-        if (cartaVieja == 'J' || cartaVieja == 'Q' || cartaVieja == 'K' || cartaVieja == 'A'){
-            switch (cartaVieja){
-                case 'J':
-                    cartaVieja = 11;
-                    break;
-                case 'Q':
-                    cartaVieja = 12;
-                    break;
-                case 'K':
-                    cartaVieja = 13;
-                    break;
-                case 'A':
-                    cartaVieja = 1;
-                    break
-            }
-        }
-        if (cartaNueva == 'J' || cartaNueva == 'Q' || cartaNueva == 'K' || cartaNueva == 'A'){
-            switch (cartaNueva){
-                case 'J':
-                    cartaNueva = 11;
-                    break;
-                case 'Q':
-                    cartaNueva = 12;
-                    break;
-                case 'K':
-                    cartaNueva = 13;
-                    break;
-                case 'A':
-                    cartaNueva = 1;
-                    break
-            }
-        }
-        if(cartaNueva<=cartaVieja){
-            let posibilidadesAbajo = ((13-(cartaVieja-1))/13)+1;
-            let ganancia = cantidadValue * posibilidadesAbajo; 
-            
-            console.log('🎉 Ganaste en Hi-Lo:');
-            console.log('   Cantidad apostada:', cantidadValue);
-            console.log('   Ganancia:', ganancia);
-            
-            storeActivity(ganancia, "Hi-Lo");
-            updateBalance(ganancia);
-            showHasWon();
-        }else{
-            let perdida = -cantidadValue;
-            
-            console.log('💔 Perdiste en Hi-Lo:');
-            console.log('   Cantidad apostada:', cantidadValue);
-            console.log('   Pérdida:', perdida);
-            
-            storeActivity(perdida, "Hi-Lo");
-            updateBalance(perdida);
-            showHasLost();
-        }
 
-        computerCardSlot.removeChild(cartaDinamica);
-        computerCardSlot.appendChild(deck.cards[0].getHTML());
-        cantidadHiLo.value = '';
+        playHiLoGame(cantidadValue, 'lower');
     }
 });
 
-function updateBalance(amount) {
-    const id = sessionStorage.getItem('token');
-    const url = getApiUrl(API_CONFIG.ENDPOINTS.BALANCE);
+async function playHiLoGame(betAmount, prediction) {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
 
-    let data = {
-        id: id,
-        amount: amount,
-    };
+    try {
+        const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.PLAY_HILO), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                userId: userId,
+                betAmount: betAmount,
+                prediction: prediction
+            })
+        });
 
-    xhr.open('PUT', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    
-    xhr.onload = function () {
-        if (xhr.status !== 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        } else {
-            if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
-                tagGanador.innerHTML = data.balance.toFixed(2);
-            }
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error en el juego');
         }
-    };
-    xhr.send(JSON.stringify(data));
+
+        const result = await response.json();
+
+        const oldCardElement = convertValueToCard(result.oldCard);
+        const newCardElement = convertValueToCard(result.newCard);
+        
+        computerCardSlot.removeChild(document.getElementById('cartaDinamica'));
+        computerCardSlot.appendChild(newCardElement);
+
+        tagGanador.innerHTML = parseFloat(result.newBalance).toFixed(2);
+
+        if (result.won) {
+            showHasWon();
+        } else {
+            showHasLost();
+        }
+
+        cantidadHiLo.value = '';
+
+        if (deck.cards.length > 1) {
+            deck.pop();
+        }
+
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message
+        });
+    }
 }
 
-function storeActivity(balance, nameGame) {
-    const id = sessionStorage.getItem('token');
-    const url = getApiUrl(API_CONFIG.ENDPOINTS.ACTIVITY);
-
-    var BetStatus = false;
-    if (balance > 0) {
-        BetStatus = true;
+function convertValueToCard(value) {
+    const suits = ["♠", "♣", "♥", "♦"];
+    const randomSuit = suits[Math.floor(Math.random() * suits.length)];
+    
+    let displayValue;
+    switch(value) {
+        case 1: displayValue = 'A'; break;
+        case 11: displayValue = 'J'; break;
+        case 12: displayValue = 'Q'; break;
+        case 13: displayValue = 'K'; break;
+        default: displayValue = value.toString();
     }
 
-    let data = {
-        userID: id,
-        balance: balance,
-        dateGame: new Date().toISOString(),
-        nameGame: nameGame,
-        BetStatus: BetStatus
-    };
-
-    xhr.open('POST', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
+    const cardDiv = document.createElement('div');
+    cardDiv.innerText = randomSuit;
+    cardDiv.classList.add('card', randomSuit === '♣' || randomSuit === '♠' ? 'black' : 'red');
+    cardDiv.dataset.value = `${displayValue} ${randomSuit}`;
+    cardDiv.id = 'cartaDinamica';
     
-    xhr.onload = function () {
-        if (xhr.status !== 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        }
-    };
-    xhr.send(JSON.stringify(data));
+    return cardDiv;
 }
+

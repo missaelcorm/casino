@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="styles/output.css">
     <link rel="icon" href="assets/images/icon.png" type="image/png">
     <link rel="stylesheet" href="styles/index.css">
+    <script src="scripts/preventImageLoad.js"></script>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/assetsService.js"></script>
+    <script src="scripts/loadS3Images.js"></script>
 
 </head>
 <body>
@@ -41,7 +45,7 @@
             </div>
 
             <div class=" flex flex-none ">
-                <img src="/assets/images/full_logo.png" alt="iconOnMainPage">
+                <img data-src="/assets/images/full_logo.png" alt="iconOnMainPage">
             </div>
 
             <div class="flex flex-shrink-0 items-center space-x-4 text-white">
@@ -94,38 +98,38 @@
                             <div id="slider" class="h-full flex lg:gap-8 md:gap-6 gap-14 items-center justify-start transition ease-out duration-700">
                                 <div class="flex flex-shrink-0 relative w-full sm:w-auto">
                                     <a id="cardHov3" onclick="goToInit()">
-                                        <img src="/assets/images/cleanImages/rouletteCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
+                                        <img data-src="/assets/images/cleanImages/rouletteCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
                                     </a>
                                 </div>
                                 <div class="flex flex-shrink-0 relative w-full sm:w-auto">
                                     <a id="cardHov2" onclick="goToInit()">
-                                        <img src="/assets/images/cleanImages/hiloCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
+                                        <img data-src="/assets/images/cleanImages/hiloCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
                                     </a>
                                 </div>
                                 <div class="flex flex-shrink-0 relative w-full sm:w-auto">
                                     <a id="cardHov4" onclick="goToInit()">
-                                        <img src="/assets/images/cleanImages/mine.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
+                                        <img data-src="/assets/images/cleanImages/mine.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
                                     </a>
                                 </div>
                                 <div class="flex flex-shrink-0 relative w-full sm:w-auto">
                                     <a class="cardHov9" onclick="goToInit()">
-                                        <img src="/assets/images/cleanImages/slideCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
+                                        <img data-src="/assets/images/cleanImages/slideCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
                                     </a>
                                 </div>
 
                                 <div class="flex flex-shrink-0 relative w-full sm:w-auto">
                                     <a class="cardHov9" onclick="goToInit()">
-                                        <img src="/assets/images/cleanImages/pokerCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
+                                        <img data-src="/assets/images/cleanImages/pokerCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
                                     </a>
                                 </div>
                                 <div class="flex flex-shrink-0 relative w-full sm:w-auto">
                                     <a class="cardHov9" onclick="goToInit()">
-                                        <img src="/assets/images/cleanImages/limboCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
+                                        <img data-src="/assets/images/cleanImages/limboCar.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
                                     </a>
                                 </div>
                                 <div class="flex flex-shrink-0 relative w-full sm:w-auto">
                                     <a class="cardHov9" onclick="goToInit()">
-                                        <img src="/assets/images/cleanImages/diamondsCart.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
+                                        <img data-src="/assets/images/cleanImages/diamondsCart.jpg" alt="black chair and white table" class="object-cover object-center w-80" />
                                     </a>
                                 </div>
 
