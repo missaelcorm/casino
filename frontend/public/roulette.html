@@ -10,8 +10,11 @@
     <link rel="icon" href="assets/images/icon.png" type="image/png">
     <link rel="stylesheet" href="styles/index.css">
     <link rel="stylesheet" href="styles/roulette.css">
-    <script src="scripts/indexLoading.js"></script>
+    <script src="scripts/preventImageLoad.js"></script>
     <script src="scripts/config.js"></script>
+    <script src="scripts/assetsService.js"></script>
+    <script src="scripts/loadS3Images.js"></script>
+    <script src="scripts/indexLoading.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body style="overflow: hidden; background-image: linear-gradient(to bottom, #0d1e2b, #0e1f2f, #0f2132, #112236, #132339, #132339, #132339, #132339, #112236, #0f2132, #0e1f2f, #0d1e2b);">
@@ -22,7 +25,7 @@
         </div>
 
         <div class=" flex flex-none ">
-            <img src="/assets/images/full_logo.png" alt="iconOnMainPage">
+            <img data-src="/assets/images/full_logo.png" alt="iconOnMainPage">
         </div>
 
         <div class="flex flex-shrink-0 items-center space-x-4 text-white">
@@ -43,7 +46,7 @@
                         <a id="textProf"></a>
                     </button>
                     <button class="rounded-full " onclick="goToProfile()">
-                        <img class="h-6 w-auto rounded-full" src="/assets/images/pos.jpg" alt=""/>
+                        <img class="h-6 w-auto rounded-full" data-src="/assets/images/pos.jpg" alt=""/>
                     </button>
                 </div>
             </div>

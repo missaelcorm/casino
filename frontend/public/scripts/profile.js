@@ -1,10 +1,9 @@
-const xhr = new XMLHttpRequest();
-
 document.addEventListener('DOMContentLoaded', () => {
     loadProfile();
 });
 
 function loadProfile() {
+    const xhr = new XMLHttpRequest();
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     
@@ -69,6 +68,7 @@ function confirm(component) {
 }
 
 function updateField(field, newValue) {
+    const xhr = new XMLHttpRequest();
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
 
@@ -90,7 +90,6 @@ function updateField(field, newValue) {
         } else { 
             if (xhr.status === 200) {
                 data = JSON.parse(xhr.responseText);
-                console.log(data);
                 document.querySelector('#account-bold-username').innerHTML = data.name;
                 document.querySelector('#textProf').innerHTML = data.name;
             }

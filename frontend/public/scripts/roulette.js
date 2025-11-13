@@ -1,5 +1,4 @@
 import {Wheel} from 'https://cdn.jsdelivr.net/npm/spin-wheel@4.3.0/dist/spin-wheel-esm.js';
-const xhr = new XMLHttpRequest();
 
 const props = {
     items: [
@@ -71,11 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadBalanceRoulette() {
-    var id = sessionStorage.getItem('token');
+    const xhr = new XMLHttpRequest();
+    var id = localStorage.getItem('userId');
+    var token = localStorage.getItem('token');
     var url = getApiUrl(API_CONFIG.ENDPOINTS.BALANCE) + `?id=${id}`;
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
     
     xhr.onload = function() {
@@ -90,31 +92,6 @@ function loadBalanceRoulette() {
         }
     };
     xhr.send();
-}
-
-function updateBalance(amount) {
-    const id = sessionStorage.getItem('token');
-    const url = getApiUrl(API_CONFIG.ENDPOINTS.BALANCE);
-
-    let data = {
-        id: id,
-        amount: amount,
-    };
-
-    xhr.open('PUT', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    
-    xhr.onload = function () {
-        if (xhr.status !== 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        } else {
-            if (xhr.status === 200) {
-                loadBalanceRoulette();
-            }
-        }
-    };
-    xhr.send(JSON.stringify(data));
 }
 
 function showHasWon() {
@@ -256,36 +233,7 @@ checkboxTercera.addEventListener('click', () => {
     actualizarVisibilidadDecena();
 });
 
-function storeActivity(balance, nameGame) {
-    const id = sessionStorage.getItem('token');
-    const url = getApiUrl(API_CONFIG.ENDPOINTS.ACTIVITY);
-
-    var BetStatus = false;
-    if (balance > 0) {
-        BetStatus = true;
-    }
-
-    let data = {
-        userID: id,
-        balance: balance,
-        dateGame: new Date().toISOString(),
-        nameGame: nameGame,
-        BetStatus: BetStatus
-    };
-
-    xhr.open('POST', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    
-    xhr.onload = function () {
-        if (xhr.status !== 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        }
-    };
-    xhr.send(JSON.stringify(data));
-}
-
-btnSpin.addEventListener('click', function () {
+btnSpin.addEventListener('click', async function () {
     if((checkboxRojo.checked || checkboxNegro.checked || checkboxVerde.checked || checkboxPar.checked || checkboxImpar.checked || checkboxPrimera.checked || checkboxSegunda.checked || checkboxTercera.checked) && (cantidadAColor.value !== '' || cantidadAParidad.value !== '' || cantidadADocena.value !== '')) {
         
         let currentBalance = parseFloat(document.querySelector('#tagBalance').innerHTML);
@@ -308,79 +256,96 @@ btnSpin.addEventListener('click', function () {
             return;
         }
 
-        let numeroDecimalAleatorio = Math.random();
-        let numeroAleatorio = Math.floor(numeroDecimalAleatorio * 37);
+        const bets = [];
+        
+        if (checkboxRojo.checked && valueAColor > 0) {
+            bets.push({ type: 'color', value: 'Rojo', amount: valueAColor });
+        } else if (checkboxNegro.checked && valueAColor > 0) {
+            bets.push({ type: 'color', value: 'Negro', amount: valueAColor });
+        } else if (checkboxVerde.checked && valueAColor > 0) {
+            bets.push({ type: 'color', value: 'Verde', amount: valueAColor });
+        }
 
-        wheel.spinToItem(numeroAleatorio, 6000, false, 2);
+        if (checkboxPar.checked && valueAParidad > 0) {
+            bets.push({ type: 'parity', value: 'par', amount: valueAParidad });
+        } else if (checkboxImpar.checked && valueAParidad > 0) {
+            bets.push({ type: 'parity', value: 'impar', amount: valueAParidad });
+        }
+
+        if (checkboxPrimera.checked && valueADocena > 0) {
+            bets.push({ type: 'dozen', value: '1', amount: valueADocena });
+        } else if (checkboxSegunda.checked && valueADocena > 0) {
+            bets.push({ type: 'dozen', value: '2', amount: valueADocena });
+        } else if (checkboxTercera.checked && valueADocena > 0) {
+            bets.push({ type: 'dozen', value: '3', amount: valueADocena });
+        }
+
         btnSpin.disabled = true;
 
-        setTimeout(() => {
+        try {
+            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('token');
+
+            const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.PLAY_ROULETTE), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    bets: bets
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error en el juego');
+            }
+
+            const result = await response.json();
+
+            wheel.spinToItem(result.winningIndex, 6000, false, 2);
+
+            setTimeout(() => {
+                btnSpin.disabled = false;
+
+                tagBalance.innerHTML = parseFloat(result.newBalance).toFixed(2);
+
+                if (result.totalAmountChange > 0) {
+                    showHasWon();
+                } else {
+                    showHasLost();
+                }
+
+
+                cantidadAColor.value = '';
+                cantidadAParidad.value = '';
+                cantidadADocena.value = '';
+
+                checkboxRojo.checked = false;
+                checkboxNegro.checked = false;
+                checkboxVerde.checked = false;
+                checkboxPar.checked = false;
+                checkboxImpar.checked = false;
+                checkboxPrimera.checked = false;
+                checkboxSegunda.checked = false;
+                checkboxTercera.checked = false;
+
+                actualizarVisibilidad();
+                actualizarVisibilidadParidad();
+                actualizarVisibilidadDecena();
+
+            }, 6500);
+
+        } catch (error) {
             btnSpin.disabled = false;
-            let indiceGanador = wheel.getCurrentIndex();
-            let winnerColor = props.items[indiceGanador].color;
-            let winnerParity = props.items[indiceGanador].paridad;
-            let winnerDozen = props.items[indiceGanador].docena;
-
-            let amountToAdd = 0;
-
-            let checkedColors = [];
-            let checkedParities = [];
-            let checkedDozens = [];
-
-            if (checkboxRojo.checked) checkedColors.push('Rojo');
-            if (checkboxNegro.checked) checkedColors.push('Negro');
-            if (checkboxVerde.checked) checkedColors.push('Verde');
-
-            if (checkboxPar.checked) checkedParities.push('par');
-            if (checkboxImpar.checked) checkedParities.push('impar');
-
-            if (checkboxPrimera.checked) checkedDozens.push('1');
-            if (checkboxSegunda.checked) checkedDozens.push('2');
-            if (checkboxTercera.checked) checkedDozens.push('3');
-
-            if ((checkedColors.length > 0 && cantidadAColor.value.length > 0) && checkedColors.includes(winnerColor)) {
-                amountToAdd+= parseFloat(cantidadAColor.value);
-                showHasWon();
-            } else if (checkedColors.length > 0 && cantidadAColor.value.length > 0) {
-                amountToAdd -= parseFloat(cantidadAColor.value);
-                showHasLost();
-            }
-
-            if ((checkedParities.length && cantidadAParidad.value.length > 0) > 0 && checkedParities.includes(winnerParity)) {
-                amountToAdd+= parseFloat(cantidadAParidad.value);
-                showHasWon();
-            } else if (checkedParities.length > 0 && cantidadAParidad.value.length > 0) {
-                amountToAdd -= parseFloat(cantidadAParidad.value);
-                showHasLost();
-            }
-
-            if ((checkedDozens.length > 0 && cantidadADocena.value.length > 0) && checkedDozens.includes(winnerDozen)) {
-                amountToAdd+= parseFloat(cantidadADocena.value);
-                showHasWon();
-            } else if (checkedDozens.length > 0 && cantidadADocena.value.length > 0) {
-                amountToAdd -= parseFloat(cantidadADocena.value);
-                showHasLost();
-            }
-
-            cantidadAColor.value = '';
-            cantidadAParidad.value = '';
-            cantidadADocena.value = '';
-
-            storeActivity(amountToAdd, 'Ruleta');
-            updateBalance(amountToAdd);
-
-            checkboxRojo.checked = false;
-            checkboxNegro.checked = false;
-            checkboxPar.checked = false;
-            checkboxImpar.checked = false;
-            checkboxPrimera.checked = false;
-            checkboxSegunda.checked = false;
-            checkboxTercera.checked = false;
-            balance = 0;
-
-        }, 6500);
-
-        init();
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: error.message
+            });
+        }
 
     } else {
         Swal.fire({

@@ -1,25 +1,47 @@
-const xhr = new XMLHttpRequest();
-const imagesMap = new Map();
-imagesMap.set('Crash', 'assets/images/crash_car.png');
-imagesMap.set('Diamonds', 'assets/images/diamonds_car.png');
-imagesMap.set('Hi-Lo', 'assets/images/hilo_car.png');
-imagesMap.set('Limbo', 'assets/images/limbo_prox.png');
-imagesMap.set('Ruleta', 'assets/images/roulette_car.png');
-imagesMap.set('Slide', 'assets/images/slide_prox.png');
-imagesMap.set('Slot', 'assets/images/slots_car.png');
-imagesMap.set('Poker', 'assets/images/videoPoker_prox.png');
-imagesMap.set('Mines', 'assets/images/mine.jpg');
+const gameImageNames = {
+    'Crash': 'crash_car',
+    'Diamonds': 'diamonds_car',
+    'Hi-Lo': 'hilo_car',
+    'Limbo': 'limbo_prox',
+    'Ruleta': 'roulette_car',
+    'Slide': 'slide_prox',
+    'Slot': 'slots_car',
+    'Poker': 'videoPoker_prox',
+    'Mines': 'mine'
+};
 
-document.addEventListener('DOMContentLoaded', () => {
+let imagesFromS3 = {};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadImagesFromS3();
     loadActivity();
 });
 
+async function loadImagesFromS3() {
+    try {
+        imagesFromS3 = await assetsService.getImages();
+    } catch (error) {
+        imagesFromS3 = {};
+    }
+}
+
+function getGameImageUrl(gameName) {
+    const imageName = gameImageNames[gameName];
+    if (imageName && imagesFromS3[imageName]) {
+        return imagesFromS3[imageName];
+    }
+    return `assets/images/${imageName || 'default'}.png`;
+}
+
 function loadActivity() {
-    var id = sessionStorage.getItem('token');
+    const xhr = new XMLHttpRequest();
+    var id = localStorage.getItem('userId');
+    var token = localStorage.getItem('token');
     var url = getApiUrl(API_CONFIG.ENDPOINTS.ACTIVITY) + `?id=${id}`;
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
     
     xhr.onload = function() {
@@ -28,7 +50,6 @@ function loadActivity() {
         } else { 
             if (xhr.status === 200) {
                 let activities = JSON.parse(xhr.responseText);
-                console.log(activities);
 
                 let container = document.querySelector('.activity-container-content');
 
@@ -43,9 +64,11 @@ function loadActivity() {
                     let amountColumn = document.createElement('div');
                     amountColumn.classList.add('activity-container-content-column');
 
+                    const imageUrl = getGameImageUrl(activity.nameGame);
+                    
                     titleColumn.innerHTML = `
                         <div class="game">
-                            <img src="${imagesMap.get(activity.nameGame)}">
+                            <img src="${imageUrl}">
                             <span>${activity.nameGame}</span>
                         </div> 
                     `;
