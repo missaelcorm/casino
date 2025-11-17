@@ -1,2 +1,6 @@
-package-lock.json
-node_modules/*
+node_modules/
+.env
+.db_root_username
+.db_root_password
+localstack/*
+!localstack/init-s3.sh

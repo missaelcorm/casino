@@ -1,0 +1,66 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    restart: unless-stopped
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME_FILE: /run/secrets/db_root_username
+      MONGODB_INITDB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MONGODB_INITDB_DATABASE: friocasino
+    secrets:
+      - db_root_username
+      - db_root_password
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+
+  localstack:
+    image: localstack/localstack:latest
+    hostname: localstack
+    container_name: localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - DEBUG=0
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - DEFAULT_REGION=us-east-1
+      - HOSTNAME_EXTERNAL=localstack
+    volumes:
+      - ./localstack:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./localstack/init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh
+
+  friocasino-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - path: ./backend/.env
+        required: true
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+      - localstack
+
+  friocasino-web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - API_BASE_URL=http://localhost:3000/api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - friocasino-api
+
+secrets:
+  db_root_username:
+    file: ./.db_root_username
+  db_root_password:
+    file: ./.db_root_password
+
+volumes:
+  mongodb:
