@@ -1,36 +1,22 @@
 const gameImageNames = {
-    'Crash': 'crash_car',
-    'Diamonds': 'diamonds_car',
-    'Hi-Lo': 'hilo_car',
-    'Limbo': 'limbo_prox',
-    'Ruleta': 'roulette_car',
-    'Slide': 'slide_prox',
-    'Slot': 'slots_car',
-    'Poker': 'videoPoker_prox',
-    'Mines': 'mine'
+    'Crash': 'crash_car.jpg',
+    'Diamonds': 'diamondsCart.jpg',
+    'Hi-Lo': 'hiloCar.jpg',
+    'Limbo': 'limboCar.jpg',
+    'Ruleta': 'rouletteCar.jpg',
+    'Slide': 'slideCar.jpg',
+    'Slot': 'slotsCar.jpg',
+    'Poker': 'pokerCar.jpg',
+    'Mines': 'mine.jpg'
 };
 
-let imagesFromS3 = {};
-
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadImagesFromS3();
+document.addEventListener('DOMContentLoaded', () => {
     loadActivity();
 });
 
-async function loadImagesFromS3() {
-    try {
-        imagesFromS3 = await assetsService.getImages();
-    } catch (error) {
-        imagesFromS3 = {};
-    }
-}
-
 function getGameImageUrl(gameName) {
     const imageName = gameImageNames[gameName];
-    if (imageName && imagesFromS3[imageName]) {
-        return imagesFromS3[imageName];
-    }
-    return `assets/images/${imageName || 'default'}.png`;
+    return `assets/images/cleanImages/${imageName || 'default.png'}`;
 }
 
 function loadActivity() {

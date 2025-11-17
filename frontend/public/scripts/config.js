@@ -9,6 +9,10 @@ const API_CONFIG = {
         BALANCE: '/user/balance',
         ACTIVITY: '/user/activity',
         
+        PROFILE_UPLOAD: '/profile/upload',
+        PROFILE_DELETE: '/profile/delete',
+        PROFILE_IMAGE: '/profile/image',
+        
         PLAY_HILO: '/games/hi-lo',
         PLAY_ROULETTE: '/games/roulette',
         PLAY_MINES: '/games/mines',

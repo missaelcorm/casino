@@ -191,3 +191,100 @@ body {
     text-align: center;
     border-radius: 5px;
 }
+
+.profile-image-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.profile-image-container:hover {
+    transform: scale(1.05);
+}
+
+.profile-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    gap: 10px;
+}
+
+.profile-image-container:hover .profile-image-overlay {
+    opacity: 1;
+}
+
+.profile-image-upload-btn {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.profile-image-upload-btn:hover,
+.profile-image-upload-btn:focus,
+.profile-image-upload-btn:active {
+    background-color: white !important;
+    color: black !important;
+}
+
+.profile-image-upload-btn:hover *,
+.profile-image-upload-btn:focus *,
+.profile-image-upload-btn:active * {
+    color: black !important;
+}
+
+.profile-image-delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: background-color 0.3s ease;
+}
+
+.profile-image-delete-btn:hover {
+    background-color: #c82333;
+}
+
+.profile-image-info {
+    font-size: 11px;
+    color: #a0a0a0;
+    margin-top: 5px;
+    text-align: center;
+}
+
+#account-details-right img {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}

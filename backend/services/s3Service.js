@@ -1,4 +1,4 @@
-const { S3Client, ListObjectsV2Command, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, ListObjectsV2Command, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const s3Client = new S3Client({
@@ -117,6 +117,48 @@ async function getFileUrl(fileKey, useSignedUrl = false) {
     }
 }
 
+async function uploadProfileImage(buffer, fileName, userId, mimeType) {
+    try {
+        const fileExtension = mimeType.split('/')[1];
+        const key = `profile-images/${userId}/${Date.now()}-${fileName}`;
+        
+        const command = new PutObjectCommand({
+            Bucket: bucketName,
+            Key: key,
+            Body: buffer,
+            ContentType: mimeType
+        });
+
+        await s3Client.send(command);
+        
+        const url = getPublicFileUrl(key);
+        
+        return {
+            url,
+            key
+        };
+    } catch (error) {
+        console.error('Error uploading profile image to S3:', error);
+        throw error;
+    }
+}
+
+async function deleteProfileImage(fileKey) {
+    try {
+        const command = new DeleteObjectCommand({
+            Bucket: bucketName,
+            Key: fileKey
+        });
+
+        await s3Client.send(command);
+        
+        return true;
+    } catch (error) {
+        console.error('Error deleting profile image from S3:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     listFilesInFolder,
     getSignedFileUrl,
@@ -124,6 +166,8 @@ module.exports = {
     getImageUrls,
     getFontUrls,
     getFileUrl,
+    uploadProfileImage,
+    deleteProfileImage,
     s3Client,
     bucketName
 };

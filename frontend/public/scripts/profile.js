@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadProfile();
+    initializeProfileImageHandlers();
 });
 
 function loadProfile() {
@@ -42,6 +43,8 @@ function loadProfile() {
 
                 ageField.innerHTML = data.age + " " + "años";
                 usernameBoldField.innerHTML = data.name;
+                
+                loadProfileImage();
             }
         }
     };
@@ -145,4 +148,191 @@ function edit(component) {
     span.style.display = 'none';
     confirm.style.display = 'block';
     cancel.style.display = 'block';
+}
+
+function initializeProfileImageHandlers() {
+    const fileInput = document.getElementById('profile-image-input');
+    const deleteBtn = document.getElementById('delete-profile-image-btn');
+    
+    fileInput.addEventListener('change', handleProfileImageUpload);
+    deleteBtn.addEventListener('click', handleProfileImageDelete);
+}
+
+function loadProfileImage() {
+    const xhr = new XMLHttpRequest();
+    const token = localStorage.getItem('token');
+    
+    xhr.open('GET', getApiUrl(API_CONFIG.ENDPOINTS.PROFILE_IMAGE), true);
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            if (data.success && data.profileImage) {
+                updateProfileImageDisplay(data.profileImage);
+                document.getElementById('delete-profile-image-btn').style.display = 'block';
+            }
+        }
+    };
+    xhr.send();
+}
+
+function handleProfileImageUpload(event) {
+    const file = event.target.files[0];
+    
+    if (!file) return;
+    
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Tipo de archivo no permitido',
+            text: 'Solo se aceptan imágenes JPEG, JPG, PNG y WEBP'
+        });
+        event.target.value = '';
+        return;
+    }
+    
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Archivo demasiado grande',
+            text: 'Tamaño máximo: 5MB'
+        });
+        event.target.value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        updateProfileImageDisplay(e.target.result);
+    };
+    reader.readAsDataURL(file);
+    
+    uploadProfileImageToServer(file);
+}
+
+function uploadProfileImageToServer(file) {
+    const formData = new FormData();
+    formData.append('profileImage', file);
+    
+    const xhr = new XMLHttpRequest();
+    const token = localStorage.getItem('token');
+    
+    xhr.open('POST', getApiUrl(API_CONFIG.ENDPOINTS.PROFILE_UPLOAD), true);
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            if (data.success) {
+                updateProfileImageDisplay(data.profileImage);
+                document.getElementById('delete-profile-image-btn').style.display = 'block';
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Imagen actualizada!',
+                    text: 'Tu imagen de perfil se ha actualizado correctamente',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error
+                });
+            }
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al subir la imagen de perfil'
+            });
+        }
+        document.getElementById('profile-image-input').value = '';
+    };
+    
+    xhr.onerror = function() {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor'
+        });
+        document.getElementById('profile-image-input').value = '';
+    };
+    
+    xhr.send(formData);
+}
+
+function handleProfileImageDelete() {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¿Quieres eliminar tu imagen de perfil?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const xhr = new XMLHttpRequest();
+            const token = localStorage.getItem('token');
+            
+            xhr.open('DELETE', getApiUrl(API_CONFIG.ENDPOINTS.PROFILE_DELETE), true);
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    if (data.success) {
+                        updateProfileImageDisplay('/assets/images/pos.jpg');
+                        document.getElementById('delete-profile-image-btn').style.display = 'none';
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Eliminada!',
+                            text: 'Tu imagen de perfil ha sido eliminada',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al eliminar la imagen de perfil'
+                    });
+                }
+            };
+            
+            xhr.onerror = function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo conectar con el servidor'
+                });
+            };
+            
+            xhr.send();
+        }
+    });
+}
+
+function updateProfileImageDisplay(imageUrl) {
+    const profileImage = document.getElementById('profile-image-display');
+    if (profileImage) {
+        profileImage.src = imageUrl;
+    }
+    
+    const navProfileImages = document.querySelectorAll('.h-6.w-auto.rounded-full');
+    navProfileImages.forEach(img => {
+        img.src = imageUrl;
+    });
 }

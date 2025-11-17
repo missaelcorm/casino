@@ -4,15 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Perfil</title>
-    <link rel="stylesheet" href="styles/profile.css">
+    <link rel="stylesheet" href="styles/profile.css?v=5">
+    <link rel="stylesheet" href="styles/swal-custom.css?v=1">
     <link rel="stylesheet" href="styles/index.css">
     <link rel="stylesheet" href="styles/output.css">
     <link rel="icon" href="assets/images/icon.png" type="image/png">
-    <script src="scripts/preventImageLoad.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="scripts/config.js"></script>
-    <script src="scripts/assetsService.js"></script>
-    <script src="scripts/loadS3Images.js"></script>
-    <script src="scripts/profile.js"></script>
+    <script src="scripts/profile.js?v=2"></script>
     <script src="https://kit.fontawesome.com/fffb4aa0e0.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -88,7 +87,7 @@
             </div>
 
             <div class=" flex flex-none ">
-                <img data-src="/assets/images/full_logo.png" alt="iconOnMainPage">
+                <img src="/assets/images/full_logo.png" alt="iconOnMainPage">
             </div>
 
             <div class="flex flex-shrink-0 items-center justify-center space-x-4 text-white">
@@ -100,7 +99,7 @@
                         <a id="textProf"></a>
                     </button>
                     <button class="rounded-full " onclick="goToProfile()">
-                        <img class="h-6 w-auto rounded-full" data-src="/assets/images/pos.jpg" alt=""/>
+                        <img class="h-6 w-auto rounded-full" src="/assets/images/pos.jpg" alt=""/>
                     </button>
                 </div>
             </div>
@@ -181,8 +180,21 @@
                         </div>
                     </div>
                     <div id="account-details-right">
-                        <img data-src="/assets/images/pos.jpg">
+                        <div class="profile-image-container">
+                            <img id="profile-image-display" src="/assets/images/pos.jpg" alt="Imagen de perfil">
+                            <div class="profile-image-overlay">
+                                <label for="profile-image-input" class="profile-image-upload-btn">
+                                    <i class="fa-solid fa-camera"></i>
+                                    <span>Cambiar foto</span>
+                                </label>
+                                <input type="file" id="profile-image-input" accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none;">
+                                <button id="delete-profile-image-btn" class="profile-image-delete-btn" style="display: none;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
                         <span id="account-bold-username">Ron</span>
+                        <span id="profile-image-info" class="profile-image-info">Máximo 5MB - JPG, PNG, WEBP</span>
                     </div>
                 </div>
             </div>
