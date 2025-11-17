@@ -98,7 +98,7 @@ module "backend_service" {
     },
     {
       name  = "MONGO_ARGS"
-      value = "tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"
+      value = "tls=true&tlsCAFile=global-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false&authMechanism=SCRAM-SHA-1"
     },
     {
       name : "S3_BUCKET_NAME"
@@ -132,7 +132,7 @@ module "backend_service" {
       valueFrom = "${module.secrets.docdb_secrets_manager_secret_arn}:password::"
     },
     {
-      name      = "SECRET_KEY"
+      name      = "JWT_SECRET"
       valueFrom = "${module.secrets.backend_jwt_secret_arn}:secretkey::"
     }
   ]
