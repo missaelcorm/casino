@@ -42,14 +42,15 @@ module "ecs_cluster" {
 module "alb" {
   source = "../../modules/alb"
 
-  project                   = var.project
-  environment               = var.environment
-  vpc_id                    = module.networking.vpc_id
-  public_subnet_ids         = module.networking.public_subnet_ids
-  security_group_id         = module.security.alb_security_group_id
-  certificate_arn           = module.acm.certificate_validation_arn
-  app_domain                = local.app_domain
-  backend_health_check_path = "/"
+  project                    = var.project
+  environment                = var.environment
+  vpc_id                     = module.networking.vpc_id
+  public_subnet_ids          = module.networking.public_subnet_ids
+  security_group_id          = module.security.alb_security_group_id
+  certificate_arn            = module.acm.certificate_validation_arn
+  app_domain                 = local.app_domain
+  backend_health_check_path  = "/"
+  frontend_health_check_path = "/index_logInPending.html"
 
   depends_on = [module.acm]
 }
@@ -153,6 +154,7 @@ module "frontend_service" {
   alb_listener_arn     = module.alb.https_listener_arn
   execution_role_arn   = module.security.ecs_task_execution_frontend_role_arn
   task_role_arn        = module.security.frontend_task_role_arn
+  health_check_path    = "/index_logInPending.html"
 
   ecr_repository_url  = var.frontend_image.repository_url
   container_image_tag = var.frontend_image.tag
