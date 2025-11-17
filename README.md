@@ -1,37 +1,52 @@
-# Frío Casino
+# Friocasino
 
-This is a final project for a Web Development class using Node.js as the backend and Vanilla JavaScript for the frontend. This website is inspired by some games offered by Stake, where the user can deposit or withdraw money
-in order to participate in various gaming activities, with multiple funcionailites on each game.
+## Local Development Setup
+### Setup files
 
-The project involves a virtual casino where you'll have access to a variety of fully functional games, with more set to be added soon. Moreover, you'll be able to create an account, log in, manage it, and simulate handling money within your account.
-
-## Roulette
-![Alt text](images/roulette.gif?raw=true "Roulette")
-
-## Hi-Lo
-![Alt text](images/hi-lo.gif?raw=true "Hi-Lo")
-
-## Mines
-![Alt text](images/mines.gif?raw=true "Mines")
-
-## Games
-- Roulette: Bet by Dozens, Even or Odd and Colors.
-- Mines: Guess all dimond locations to win with a x20 mutliplier.
-- Hi-Lo: Predict if the next card is higher or lower to win.
-
-## Profile 
-### Details
-![Alt text](images/details.PNG?raw=true "Details")
-
-### Activity
-![Alt text](images/activity.PNG?raw=true "History")
-
-# Installation
-Some commands used for dependencies 
+MongoDB username and password:
+```bash
+echo "root" > .db_root_username
+echo "superpassword" > .db_root_password
 ```
-npm init -y
-npm install express
-npm install nodemon -D
-npm install cors
-npm install mongoose
+
+Localstack directory (For S3)
+```bash
+mkdir localstack
+```
+
+Backend `.env` file and fill the variables:
+```bash
+cp backend/.env.example .env
+```
+
+> Make sure DB connection matches with username/password setup for MongoDB
+
+
+### Start services
+```bash
+docker compose up -d
+```
+
+### Set Up Localstack's S3 Interaction
+
+```bash
+export AWS_ACCESS_KEY_ID=test
+export AWS_SECRET_ACCESS_KEY=test
+export AWS_ENDPOINT_URL_S3=http://localhost:4566
+export AWS_REGION=us-east-1
+```
+
+Create bucket
+```bash
+aws s3 mb s3://friocasino-test
+```
+
+List bucket
+```bash
+aws s3 ls
+```
+
+List bucket's content
+```bash
+aws s3 ls s3://friocasino-test
 ```
