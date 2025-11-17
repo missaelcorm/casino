@@ -55,7 +55,7 @@ function navigateToPath(path) {
 }
 
 function goToIndex() {
-    navigateToPath('index_login.html');
+    navigateToPath('index_logIn.html');
 }
 
 function goToIndexPending() {

@@ -16,6 +16,7 @@ services:
 
   localstack:
     image: localstack/localstack:latest
+    hostname: localstack
     container_name: localstack
     ports:
       - "4566:4566"
@@ -25,9 +26,11 @@ services:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - DEFAULT_REGION=us-east-1
+      - HOSTNAME_EXTERNAL=localstack
     volumes:
       - ./localstack:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./localstack/init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh
 
   friocasino-api:
     build:
@@ -42,16 +45,16 @@ services:
       - mongodb
       - localstack
 
-  # friocasino-web:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     - APP_API_URL=http://friocasino-api:3000
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - friocasino-api
+  friocasino-web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - API_BASE_URL=http://localhost:3000/api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - friocasino-api
 
 secrets:
   db_root_username:

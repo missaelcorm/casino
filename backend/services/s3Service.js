@@ -1,13 +1,20 @@
 const { S3Client, ListObjectsV2Command, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
-const s3Client = new S3Client({
+const s3ClientConfig = {
     region: process.env.AWS_REGION || 'us-east-1',
     credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     }
-});
+};
+
+if (process.env.AWS_ENDPOINT) {
+    s3ClientConfig.endpoint = process.env.AWS_ENDPOINT;
+    s3ClientConfig.forcePathStyle = true;
+}
+
+const s3Client = new S3Client(s3ClientConfig);
 
 const bucketName = process.env.S3_BUCKET_NAME;
 
@@ -47,7 +54,12 @@ async function getSignedFileUrl(fileKey, expiresIn = 3600) {
             Key: fileKey
         });
 
-        const url = await getSignedUrl(s3Client, command, { expiresIn });
+        let url = await getSignedUrl(s3Client, command, { expiresIn });
+        
+        if (process.env.AWS_ENDPOINT) {
+            url = url.replace('localstack:4566', 'localhost:4566');
+        }
+        
         return url;
     } catch (error) {
         console.error('Error generating signed URL:', error);
@@ -56,6 +68,11 @@ async function getSignedFileUrl(fileKey, expiresIn = 3600) {
 }
 
 function getPublicFileUrl(fileKey) {
+    if (process.env.AWS_ENDPOINT) {
+        const endpoint = process.env.AWS_ENDPOINT.replace('localstack:4566', 'localhost:4566');
+        return `${endpoint}/${bucketName}/${fileKey}`;
+    }
+    
     const region = process.env.AWS_REGION || 'us-east-1';
     return `https://${bucketName}.s3.${region}.amazonaws.com/${fileKey}`;
 }
@@ -131,7 +148,9 @@ async function uploadProfileImage(buffer, fileName, userId, mimeType) {
 
         await s3Client.send(command);
         
-        const url = getPublicFileUrl(key);
+        const url = process.env.AWS_ENDPOINT 
+            ? await getSignedFileUrl(key, 604800)
+            : getPublicFileUrl(key);
         
         return {
             url,

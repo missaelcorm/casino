@@ -26,5 +26,5 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Servidor backend corriendo en puerto: ${port}`);
-    console.log(`API disponible en: http://localhost:${port}/api`);
+    console.log(`API disponible en: http://localhost:${port}`);
 });
