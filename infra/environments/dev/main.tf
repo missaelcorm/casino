@@ -88,6 +88,10 @@ module "backend_service" {
       value = "3000"
     },
     {
+      name  = "CERT_PATH"
+      value = "/usr/src/app/certs/global-bundle.pem"
+    },
+    {
       name  = "MONGO_PROTOCOL"
       value = "mongodb"
     },
@@ -166,8 +170,8 @@ module "frontend_service" {
       value = var.environment
     },
     {
-      name  = "APP_API_URL"
-      value = "https://api-${local.app_domain}"
+      name  = "API_BASE_URL"
+      value = "https://api-${local.app_domain}/api"
     }
   ]
 }
