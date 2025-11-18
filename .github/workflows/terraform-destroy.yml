@@ -40,3 +40,16 @@ jobs:
         working-directory: ${{ github.workspace }}/infra/environments/dev
         run: |
           terraform destroy -auto-approve
+      
+      - name: Send notification to Slack
+        uses: ./.github/actions/slack-notify
+        if: ${{ github.event.inputs.trigger_destroy == 'true' }}
+        with:
+          job_name: 'Terraform Destroy'
+          job_status: ${{ job.status }}
+          github_workflow: ${{ github.workflow }}
+          repo_name: ${{ github.repository }}
+          branch_name: ${{ github.ref }}
+          commit_sha: ${{ github.sha }}
+          slack_channel: '#notifications'
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
