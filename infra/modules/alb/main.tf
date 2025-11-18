@@ -74,17 +74,17 @@ resource "aws_lb_target_group" "frontend" {
 
   depends_on = [aws_lb.main]
 
-  # health_check {
-  #   enabled             = true
-  #   healthy_threshold   = 2
-  #   interval            = 30
-  #   matcher             = "200"
-  #   path                = var.frontend_health_check_path
-  #   port                = "traffic-port"
-  #   protocol            = "HTTP"
-  #   timeout             = 5
-  #   unhealthy_threshold = 3
-  # }
+  health_check {
+    enabled             = true
+    healthy_threshold   = 2
+    interval            = 30
+    matcher             = "200"
+    path                = var.frontend_health_check_path
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    unhealthy_threshold = 3
+  }
 
   tags = local.common_tags
 }
