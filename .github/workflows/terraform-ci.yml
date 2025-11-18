@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: ${{ github.workspace }}/${{ inputs.working-directory }}/tfplan
+          path: ${{ inputs.working-directory }}/tfplan
 
       - name: Send notification to Slack
         uses: ./.github/actions/slack-notify
