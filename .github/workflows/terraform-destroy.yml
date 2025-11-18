@@ -24,19 +24,19 @@ jobs:
 
       - name: Terraform Init
         id: init
-        working-directory: ${{ github.workspace }}/environments/dev
+        working-directory: ${{ github.workspace }}/infra//environments/dev
         run: |
           terraform init -input=false
 
       - name: Terraform Plan Destroy
         id: plan
-        working-directory: ${{ github.workspace }}/environments/dev
+        working-directory: ${{ github.workspace }}/infra/environments/dev
         run: |
           terraform plan -destroy
 
       - name: Terraform Destroy
         id: destroy
         if: ${{ github.event.inputs.trigger_destroy == 'true' }}
-        working-directory: ${{ github.workspace }}/environments/dev
+        working-directory: ${{ github.workspace }}/infra/environments/dev
         run: |
           terraform destroy -auto-approve

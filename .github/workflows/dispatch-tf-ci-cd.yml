@@ -28,7 +28,7 @@ jobs:
         
       - name: Validate Environment
         run: |
-          if [[ ! -d "environments/${{ github.event.inputs.environment }}" ]]; then
+          if [[ ! -d "./infra/environments/${{ github.event.inputs.environment }}" ]]; then
             echo "Environment directory does not exist"
             exit 1
           fi
@@ -37,7 +37,7 @@ jobs:
     needs: validate-inputs
     uses: DavidHCM/casino/.github/workflows/terraform-ci.yml@develop/aws-infra
     with:
-      working-directory: "environments/${{ github.event.inputs.environment }}"
+      working-directory: "./infra/environments/${{ github.event.inputs.environment }}"
     secrets:
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -48,7 +48,7 @@ jobs:
     needs: terraform-ci
     uses: DavidHCM/casino/.github/workflows/terraform-sec-scan.yml@develop/aws-infra
     with:
-      working-directory: "environments/${{ github.event.inputs.environment }}"
+      working-directory: "./infra/environments/${{ github.event.inputs.environment }}"
       environment: "${{ github.event.inputs.environment }}"
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -58,7 +58,7 @@ jobs:
     if: ${{ github.event.inputs.trigger_cd == 'true' }}
     uses: DavidHCM/casino/.github/workflows/terraform-cd.yml@develop/aws-infra
     with:
-      working-directory: "environments/${{ github.event.inputs.environment }}"
+      working-directory: "./infra/environments/${{ github.event.inputs.environment }}"
     secrets:
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
