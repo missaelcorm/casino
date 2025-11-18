@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: security_tfsec_${{ env.ENVIRONMENT }}_sarif_${{ github.sha }}
-          path: ${{ github.workspace }}/${{ inputs.working-directory }}/tfsec-report.sarif.json
+          path: ${{ inputs.working-directory }}/tfsec-report.sarif.json
           if-no-files-found: error
 
       - name: Upload Sarif Terraform Security Report Artifact
@@ -56,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: security_tfsec_${{ env.ENVIRONMENT }}_json_${{ github.sha }}
-          path: ${{ github.workspace }}/${{ inputs.working-directory }}/tfsec-report.json
+          path: ${{ inputs.working-directory }}/tfsec-report.json
           if-no-files-found: error
 
       - name: Send notification to Slack
