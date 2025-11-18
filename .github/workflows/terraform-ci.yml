@@ -56,9 +56,10 @@ jobs:
       
       - name: Terraform Lint
         id: lint
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
         run: |
           tflint --init
-          tflint --recursive --config $(pwd)/.tflint.hcl 
+          tflint --recursive --config $(pwd)/../../.tflint.hcl 
 
       - name: Terraform Validate
         id: validate
