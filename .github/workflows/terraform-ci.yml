@@ -57,7 +57,7 @@ jobs:
       - name: Terraform Lint
         id: lint
         run: |
-          tflint --init
+          tflint --init --recursive --config $(pwd)/infra/.tflint.hcl
           tflint --recursive --config $(pwd)/infra/.tflint.hcl 
 
       - name: Terraform Validate
