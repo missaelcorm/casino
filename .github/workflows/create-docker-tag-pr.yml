@@ -45,12 +45,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          repository: DavidHCM/casino
+          repository: missaelcorm/casino
           token: ${{ secrets.GITHUB_TOKEN_INPUT }}
 
       - name: Validate Environment
         run: |
-          if [[ ! -d "environments/${{ inputs.environment }}" ]]; then
+          if [[ ! -d "infra/environments/${{ inputs.environment }}" ]]; then
             echo "Environment directory does not exist"
             exit 1
           fi
@@ -72,7 +72,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          repository: DavidHCM/casino
+          repository: missaelcorm/casino
           token: ${{ secrets.GITHUB_TOKEN_INPUT }}
 
       - name: Set up Python

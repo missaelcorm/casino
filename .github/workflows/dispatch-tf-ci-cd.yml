@@ -35,7 +35,7 @@ jobs:
   
   terraform-ci:
     needs: validate-inputs
-    uses: DavidHCM/casino/.github/workflows/terraform-ci.yml@develop/aws-infra
+    uses: ./.github/workflows/terraform-ci.yml@develop/aws-infra
     with:
       working-directory: "./infra/environments/${{ github.event.inputs.environment }}"
     secrets:
@@ -46,7 +46,7 @@ jobs:
 
   terraform-sec-scan:
     needs: terraform-ci
-    uses: DavidHCM/casino/.github/workflows/terraform-sec-scan.yml@develop/aws-infra
+    uses: ./.github/workflows/terraform-sec-scan.yml@develop/aws-infra
     with:
       working-directory: "./infra/environments/${{ github.event.inputs.environment }}"
       environment: "${{ github.event.inputs.environment }}"
@@ -56,7 +56,7 @@ jobs:
   terraform-cd:
     needs: terraform-ci
     if: ${{ github.event.inputs.trigger_cd == 'true' }}
-    uses: DavidHCM/casino/.github/workflows/terraform-cd.yml@develop/aws-infra
+    uses: ./.github/workflows/terraform-cd.yml@develop/aws-infra
     with:
       working-directory: "./infra/environments/${{ github.event.inputs.environment }}"
     secrets:
@@ -68,7 +68,7 @@ jobs:
   delete-tfplan-artifact:
     needs: [terraform-ci, terraform-cd]
     if: ${{ always() }}
-    uses: DavidHCM/casino/.github/workflows/delete-artifact.yml@develop/aws-infra
+    uses: ./.github/workflows/delete-artifact.yml@develop/aws-infra
     with:
       tfplan-artifact-id: ${{ needs.terraform-ci.outputs.tfplan-artifact-id }}
       github-repository: ${{ github.repository }}
