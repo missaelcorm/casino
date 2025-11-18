@@ -1,0 +1,67 @@
+
+name: Terraform CD
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: 'Working Directory'
+        required: true
+        type: string
+    secrets:
+      aws_access_key_id:
+        description: 'AWS Access Key ID'
+        required: true
+      aws_secret_access_key:
+        description: 'AWS Secret Access Key'
+        required: true
+      cloudflare_api_token:
+        description: 'Cloudflare API Token'
+        required: true
+      SLACK_WEBHOOK_URL:
+        description: 'Slack Webhook Url'
+        required: true
+
+jobs:
+  terraform-cd:
+    runs-on: ubuntu-latest
+    container: "missaelcorm/terratool:v0.10"
+    env:
+      TF_LOG: INFO
+      AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key }}
+      TF_VAR_cloudflare_api_token: ${{ secrets.cloudflare_api_token }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Terraform Plan Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: tfplan
+          path: ${{ github.workspace }}/${{ inputs.working-directory }}
+
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
+        run: |
+          terraform init -input=false
+
+      - name: Terraform Apply
+        id: apply
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
+        run: |
+          terraform apply -input=false -auto-approve tfplan
+
+      - name: Send notification to Slack
+        uses: ./.github/actions/slack-notify
+        if: always()
+        with:
+          job_name: 'Terraform CD'
+          job_status: ${{ job.status }}
+          github_workflow: ${{ github.workflow }}
+          repo_name: ${{ github.repository }}
+          branch_name: ${{ github.ref }}
+          commit_sha: ${{ github.sha }}
+          slack_channel: '#notifications'
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

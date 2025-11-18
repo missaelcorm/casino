@@ -1,0 +1,93 @@
+name: Terraform CI
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: 'Working Directory'
+        required: true
+        type: string
+    secrets:
+      aws_access_key_id:
+        description: 'AWS Access Key ID'
+        required: true
+      aws_secret_access_key:
+        description: 'AWS Secret Access Key'
+        required: true
+      cloudflare_api_token:
+        description: 'Cloudflare API Token'
+        required: true
+      SLACK_WEBHOOK_URL:
+        description: 'Slack Webhook Url'
+        required: true
+    outputs:  
+      tfplan-artifact-id:
+        description: 'Terraform Plan Artifact ID'
+        value: ${{ jobs.terraform-ci.outputs.tfplan-artifact-id }}
+    
+jobs:
+  terraform-ci:
+    runs-on: ubuntu-latest
+    container: "missaelcorm/terratool:v0.10"
+    outputs:
+      tfplan-artifact-id: ${{ steps.upload.outputs.artifact-id }}
+    env:
+      TF_LOG: INFO
+      AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key }}
+      TF_VAR_cloudflare_api_token: ${{ secrets.cloudflare_api_token }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
+        run: |
+          terraform init -input=false
+          
+      - name: Terraform Format
+        id: fmt
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
+        run: |
+          terraform fmt -check=true -diff=true
+        continue-on-error: true
+      
+      - name: Terraform Lint
+        id: lint
+        run: |
+          tflint --init
+          tflint --recursive --config $(pwd)/.tflint.hcl 
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
+        run: |
+          terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
+        run: |
+          terraform plan -input=false -compact-warnings -out=tfplan
+        
+      - name: Upload Terraform Plan Artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ github.workspace }}/${{ inputs.working-directory }}/tfplan
+
+      - name: Send notification to Slack
+        uses: ./.github/actions/slack-notify
+        if: always()
+        with:
+          job_name: 'Terraform CI'
+          job_status: ${{ job.status }}
+          github_workflow: ${{ github.workflow }}
+          repo_name: ${{ github.repository }}
+          branch_name: ${{ github.ref }}
+          commit_sha: ${{ github.sha }}
+          slack_channel: '#notifications'
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -1,0 +1,76 @@
+name: Dispatch Terraform CI/CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      trigger_cd:
+        description: 'Trigger CD'
+        required: false
+        type: boolean
+        default: false
+      environment:
+        description: 'Environment'
+        required: true
+        type: choice
+        options:
+          - dev
+
+concurrency:
+  group: terraform-${{ github.workflow }}-${{ github.event.inputs.environment }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs: 
+  validate-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Validate Environment
+        run: |
+          if [[ ! -d "./infra/environments/${{ github.event.inputs.environment }}" ]]; then
+            echo "Environment directory does not exist"
+            exit 1
+          fi
+  
+  terraform-ci:
+    needs: validate-inputs
+    uses: ./.github/workflows/terraform-ci.yml@develop/aws-infra
+    with:
+      working-directory: "./infra/environments/${{ github.event.inputs.environment }}"
+    secrets:
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  terraform-sec-scan:
+    needs: terraform-ci
+    uses: ./.github/workflows/terraform-sec-scan.yml@develop/aws-infra
+    with:
+      working-directory: "./infra/environments/${{ github.event.inputs.environment }}"
+      environment: "${{ github.event.inputs.environment }}"
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  terraform-cd:
+    needs: terraform-ci
+    if: ${{ github.event.inputs.trigger_cd == 'true' }}
+    uses: ./.github/workflows/terraform-cd.yml@develop/aws-infra
+    with:
+      working-directory: "./infra/environments/${{ github.event.inputs.environment }}"
+    secrets:
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  delete-tfplan-artifact:
+    needs: [terraform-ci, terraform-cd]
+    if: ${{ always() }}
+    uses: ./.github/workflows/delete-artifact.yml@develop/aws-infra
+    with:
+      tfplan-artifact-id: ${{ needs.terraform-ci.outputs.tfplan-artifact-id }}
+      github-repository: ${{ github.repository }}
+    secrets:
+      GITHUB_TOKEN_INPUT: ${{ secrets.GITHUB_TOKEN }}
