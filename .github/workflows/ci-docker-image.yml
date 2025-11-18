@@ -131,7 +131,7 @@ jobs:
     - name: Upload Trivy scan results as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: security-trivy-schedulesync-json-${{ github.sha }}
+        name: security-trivy-friocasino-json-${{ github.sha }}
         path: trivy-results.json
 
     - name: Send notification to Slack
@@ -172,7 +172,7 @@ jobs:
     - name: Upload CodeQL Results as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: security-codeql-schedulesync-sarif-${{ github.sha }}
+        name: security-codeql-friocasino-sarif-${{ github.sha }}
         path: codeql-results.sarif
         if-no-files-found: warn 
     
@@ -202,4 +202,4 @@ jobs:
       environment: ${{ github.event.inputs.environment }}
       github-sha: ${{ github.sha }}
     secrets:
-      GITHUB_TOKEN_INPUT: ${{ secrets.SCHEDULESYNC_AWS_PR_ACCESS_TOKEN }}
+      GITHUB_TOKEN_INPUT: ${{ secrets.FRIOCASINO_AWS_PR_ACCESS_TOKEN }}

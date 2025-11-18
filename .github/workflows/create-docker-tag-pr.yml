@@ -45,7 +45,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          repository: missaelcorm-iteso/schedulesync-aws
+          repository: DavidHCM/casino
           token: ${{ secrets.GITHUB_TOKEN_INPUT }}
 
       - name: Validate Environment
@@ -72,7 +72,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          repository: missaelcorm-iteso/schedulesync-aws
+          repository: DavidHCM/casino
           token: ${{ secrets.GITHUB_TOKEN_INPUT }}
 
       - name: Set up Python
