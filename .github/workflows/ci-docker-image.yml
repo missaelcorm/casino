@@ -191,7 +191,7 @@ jobs:
 
   deploy_pull_request:
     needs: [set_vars, build_and_push]
-    uses: DavidHCM/casino/.github/workflows/create-docker-tag-pr.yml@develop/aws-infra
+    uses: ./.github/workflows/create-docker-tag-pr.yml
     if: ${{ github.event.inputs.create_pull_request == 'true' }}
     with:
       service: ${{ needs.build_and_push.outputs.SERVICE }}

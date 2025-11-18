@@ -67,7 +67,7 @@ jobs:
     needs: validate-inputs
     runs-on: ubuntu-latest
     env:
-      TERRFORM_TFVARS: ./environments/${{ inputs.environment }}/terraform.tfvars
+      TERRFORM_TFVARS: ./infra/environments/${{ inputs.environment }}/terraform.tfvars
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -86,7 +86,7 @@ jobs:
 
       - name: Modify Docker Tag
         run: |
-          python scripts/update-docker-tag.py ${{ env.TERRFORM_TFVARS }} ${{ inputs.service }} ${{ inputs.docker-tag }}
+          python ./scripts/update-docker-tag.py ${{ env.TERRFORM_TFVARS }} ${{ inputs.service }} ${{ inputs.docker-tag }}
 
       - name: File content
         run: |
@@ -113,4 +113,4 @@ jobs:
           draft: false
           signoff: true
           add-paths: |
-            environments/*/terraform.tfvars
+            ./infra/environments/*/terraform.tfvars
