@@ -34,7 +34,7 @@ actionLogin.addEventListener('click', async () => {
             localStorage.setItem('userId', data.user.id);
             document.cookie = `token=${token}; path=/`;
             
-            window.location.href = 'index_logIn.html';
+            window.location.href = '/index_logIn';
         } else {
             Swal.fire({
                 icon: "error",

@@ -53,7 +53,7 @@ actionRegister.addEventListener('click', async () => {
             });
 
             setTimeout(function() {
-                window.location.href = 'logIn.html';
+                window.location.href = '/logIn';
             }, 1500);
         } else {
             const errorData = await response.json();

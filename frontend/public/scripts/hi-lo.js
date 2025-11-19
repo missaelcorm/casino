@@ -275,4 +275,3 @@ function convertValueToCard(value) {
     
     return cardDiv;
 }
-
