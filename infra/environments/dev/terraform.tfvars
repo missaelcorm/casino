@@ -14,5 +14,5 @@ frontend_image = {
 
 backend_image = {
   repository_url = "missaelcorm/friocasino-api"
-  tag            = "e22234d"
+  tag            = "113ac42"
 }
