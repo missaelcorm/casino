@@ -13,10 +13,10 @@ function sendHtml(res, fileName) {
 }
 
 app.get('/', (req, res) => {
-  sendHtml(res, 'index_logInPending.html');
+  sendHtml(res, 'index.html');
 });
 
-app.get('/index_logInPending', (req, res) => {
+app.get('/home', (req, res) => {
   sendHtml(res, 'index_logInPending.html');
 });
 

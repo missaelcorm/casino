@@ -62,7 +62,7 @@ function goToIndex() {
 }
 
 function goToIndexPending() {
-    navigateToPath('/index_logInPending');
+    navigateToPath('/home');
 }
 
 function goToInfo() {
@@ -82,7 +82,7 @@ function goToExit() {
     localStorage.removeItem('userId');
     sessionStorage.removeItem('token');
     document.cookie = 'token=; Expires=0;';
-    navigateToPath('/index_logInPending');
+    navigateToPath('/home');
 }
 
 function goToBalance() {
