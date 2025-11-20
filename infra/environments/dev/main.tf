@@ -50,7 +50,7 @@ module "alb" {
   certificate_arn            = module.acm.certificate_validation_arn
   app_domain                 = local.app_domain
   backend_health_check_path  = "/"
-  frontend_health_check_path = "/index_logInPending.html"
+  frontend_health_check_path = "/"
 
   depends_on = [module.acm]
 }
@@ -154,7 +154,7 @@ module "frontend_service" {
   alb_listener_arn     = module.alb.https_listener_arn
   execution_role_arn   = module.security.ecs_task_execution_frontend_role_arn
   task_role_arn        = module.security.frontend_task_role_arn
-  health_check_path    = "/index_logInPending.html"
+  health_check_path    = "/"
 
   ecr_repository_url  = var.frontend_image.repository_url
   container_image_tag = var.frontend_image.tag

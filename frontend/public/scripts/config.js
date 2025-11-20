@@ -28,4 +28,3 @@ const API_CONFIG = {
 function getApiUrl(endpoint) {
     return API_CONFIG.BASE_URL + endpoint;
 }
-

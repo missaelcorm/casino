@@ -46,32 +46,35 @@ function loadName() {
 let defaultTransform = 0;
 
 function getBaseURL() {
-    return window.location.origin;
+    return window.location.origin; // http://localhost:8080
 }
 
 function navigateToPath(path) {
     const baseURL = getBaseURL();
-    window.location.href = `${baseURL}/${path}`;
+    if (!path.startsWith('/')) {
+        path = '/' + path;
+    }
+    window.location.href = baseURL + path;
 }
 
 function goToIndex() {
-    navigateToPath('index_logIn.html');
+    navigateToPath('/index_logIn');
 }
 
 function goToIndexPending() {
-    navigateToPath('index_logInPending.html');
+    navigateToPath('/home');
 }
 
 function goToInfo() {
-    navigateToPath('info.html');
+    navigateToPath('/info');
 }
 
 function goToRules() {
-    navigateToPath('rules.html');
+    navigateToPath('/rules');
 }
 
 function goToProfile() {
-    navigateToPath('profile.html');
+    navigateToPath('/profile');
 }
 
 function goToExit() {
@@ -79,23 +82,23 @@ function goToExit() {
     localStorage.removeItem('userId');
     sessionStorage.removeItem('token');
     document.cookie = 'token=; Expires=0;';
-    navigateToPath('index_logInPending.html');
+    navigateToPath('/home');
 }
 
 function goToBalance() {
-    navigateToPath('balance.html');
+    navigateToPath('/balance');
 }
 
 function goToActivity() {
-    navigateToPath('activity.html');
+    navigateToPath('/activity');
 }
 
 function goToInit() {
-    navigateToPath('logIn.html');
+    navigateToPath('/logIn');
 }
 
 function goToReg() {
-    navigateToPath('register.html');
+    navigateToPath('/register');
 }
 
 function redirectToGame(gamePath) {

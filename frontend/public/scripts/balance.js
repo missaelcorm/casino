@@ -20,7 +20,7 @@ function loadBalance() {
     const userId = localStorage.getItem('userId');
     
     if (!token || !userId) {
-        window.location.href = 'logIn.html';
+        window.location.href = '/logIn';
         return;
     }
     

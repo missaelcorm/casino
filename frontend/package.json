@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Frontend para Frio Casino",
   "scripts": {
-    "start": "npx http-server public -p 8080 -c-1 -o /index_logInPending.html",
-    "dev": "npx http-server public -p 8080 -c-1 -o /index_logInPending.html",
+    "start": "node server.js",
+    "dev": "node server.js",
     "build:css": "tailwindcss -i ./styles/input.css -o ./styles/output.css --watch"
   },
   "keywords": [],
@@ -15,6 +15,7 @@
     "tailwindcss": "^3.3.5"
   },
   "dependencies": {
-    "sweetalert2": "^11.10.1"
+    "sweetalert2": "^11.10.1",
+    "express": "^4.21.0"
   }
 }
