@@ -7,6 +7,9 @@ RUN apk add --no-cache curl
 # Copy package files
 COPY package*.json ./
 
+# Copy server.js
+COPY server.js ./
+
 # Install dependencies (http-server will be installed)
 RUN npm ci --omit=dev && \
     npm cache clean --force
