@@ -8,8 +8,8 @@ variable "environment" {
   type        = string
 }
 
-variable "lambda_source_dir" {
-  description = "Path to the Lambda function source directory"
+variable "lambda_package_path" {
+  description = "Path to the pre-built Lambda deployment package (zip file)"
   type        = string
 }
 

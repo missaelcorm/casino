@@ -45,6 +45,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Build Lambda Deployment Package
+        run: |
+          cd lambdas/payments
+          npm ci
+          npm run build
+
       - name: Terraform Init
         id: init
         working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}

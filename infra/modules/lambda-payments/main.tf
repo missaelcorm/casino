@@ -6,13 +6,6 @@ locals {
   }
 }
 
-# Data source to create the Lambda deployment package
-data "archive_file" "lambda_zip" {
-  type        = "zip"
-  source_dir  = var.lambda_source_dir
-  output_path = "${path.root}/lambda_package_${var.project}_${var.environment}.zip"
-}
-
 # IAM Role for Lambda execution
 resource "aws_iam_role" "lambda_execution_role" {
   name = "${var.project}-${var.environment}-payments-lambda-role"
@@ -68,14 +61,14 @@ resource "aws_iam_role_policy_attachment" "lambda_secrets_attachment" {
 
 # Lambda Function
 resource "aws_lambda_function" "payments" {
-  filename         = data.archive_file.lambda_zip.output_path
+  filename         = var.lambda_package_path
   function_name    = "${var.project}-${var.environment}-payments"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "lambda.handler"
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  runtime         = var.runtime
-  timeout         = var.timeout
-  memory_size     = var.memory_size
+  role             = aws_iam_role.lambda_execution_role.arn
+  handler          = "lambda.handler"
+  source_code_hash = filebase64sha256(var.lambda_package_path)
+  runtime          = var.runtime
+  timeout          = var.timeout
+  memory_size      = var.memory_size
 
   environment {
     variables = {

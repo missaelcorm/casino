@@ -255,10 +255,10 @@ module "lambda_payments" {
   project     = var.project
   environment = var.environment
 
-  lambda_source_dir = "${path.root}/../../../lambdas/payments"
-  runtime           = "nodejs22.x"
-  timeout           = 30
-  memory_size       = 256
+  lambda_package_path = "${path.root}/../../../lambdas/payments/lambda-payments.zip"
+  runtime             = "nodejs22.x"
+  timeout             = 30
+  memory_size         = 256
 
   stripe_secret_arn = module.secrets.stripe_secret_key_arn
   stripe_secret_key = module.secrets.stripe_secret_key_value
