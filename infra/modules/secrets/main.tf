@@ -91,7 +91,7 @@ resource "aws_secretsmanager_secret" "stripe_secret_key" {
 resource "aws_secretsmanager_secret_version" "stripe_secret_key" {
   secret_id = aws_secretsmanager_secret.stripe_secret_key.id
   secret_string = jsonencode({
-    secretkey = "${var.stripe_secret_key}"
+    secretkey = var.stripe_secret_key
   })
 
   lifecycle {

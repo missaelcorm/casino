@@ -16,7 +16,7 @@ variable "lambda_source_dir" {
 variable "runtime" {
   description = "Lambda runtime"
   type        = string
-  default     = "nodejs18.x"
+  default     = "nodejs22.x"
 }
 
 variable "timeout" {
