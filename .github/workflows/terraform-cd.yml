@@ -45,7 +45,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: lambda-payments
-          path: ${{ github.workspace }}/${{ inputs.working-directory }}/lambdas/payments
+          path: ./lambdas/payments
 
       - name: Terraform Init
         id: init

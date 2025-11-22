@@ -29,18 +29,8 @@ on:
         value: ${{ jobs.terraform-ci.outputs.tfplan-artifact-id }}
     
 jobs:
-  terraform-ci:
+  lambda-ci:
     runs-on: ubuntu-latest
-    container: "missaelcorm/terratool:v0.10"
-    outputs:
-      tfplan-artifact-id: ${{ steps.upload.outputs.artifact-id }}
-    env:
-      TF_LOG: INFO
-      AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key }}
-      TF_VAR_cloudflare_api_token: ${{ secrets.cloudflare_api_token }}
-      TF_VAR_stripe_secret_key: ${{ secrets.stripe_secret_key }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -60,7 +50,29 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lambda-payments
-          path: ${{ inputs.working-directory }}/lambdas/payments/lambda-payments.zip
+          path: ./lambdas/payments/lambda-payments.zip
+
+  terraform-ci:
+    runs-on: ubuntu-latest
+    container: "missaelcorm/terratool:v0.10"
+    outputs:
+      tfplan-artifact-id: ${{ steps.upload.outputs.artifact-id }}
+    env:
+      TF_LOG: INFO
+      AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key }}
+      TF_VAR_cloudflare_api_token: ${{ secrets.cloudflare_api_token }}
+      TF_VAR_stripe_secret_key: ${{ secrets.stripe_secret_key }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lambda Payments Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: lambda-payments
+          path: ./lambdas/payments
 
       - name: Terraform Init
         id: init
