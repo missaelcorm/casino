@@ -44,6 +44,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
 
       - name: Build Lambda Deployment Package
         run: |
