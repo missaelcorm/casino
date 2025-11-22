@@ -9,7 +9,7 @@ availability_zones = ["us-east-1a", "us-east-1b"]
 
 frontend_image = {
   repository_url = "missaelcorm/friocasino-web"
-  tag            = "7765199"
+  tag            = "18fb793"
 }
 
 backend_image = {
