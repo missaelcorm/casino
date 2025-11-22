@@ -54,6 +54,7 @@ jobs:
 
   terraform-ci:
     runs-on: ubuntu-latest
+    needs: "lambda-ci"
     container: "missaelcorm/terratool:v0.10"
     outputs:
       tfplan-artifact-id: ${{ steps.upload.outputs.artifact-id }}
