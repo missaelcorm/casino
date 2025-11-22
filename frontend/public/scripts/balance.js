@@ -1,6 +1,8 @@
 let tat;
+const STRIPE_LAMBDA_URL = 'https://sycaq5hi4lblejkdcsaeetceda0vgllp.lambda-url.us-east-1.on.aws/';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await confirmStripeDepositIfNeeded();
     loadBalance();
 });
 
@@ -49,12 +51,17 @@ function loadBalance() {
     document.getElementById('value-2').addEventListener('change', showWithdrawForm);
 }
 
-function addBalance() {
-    const xhr = new XMLHttpRequest();
+async function addBalance() {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
-    var amount = document.querySelector('#balance-form-deposit').value;
+    let amount = document.querySelector('#balance-form-deposit').value;
     amount = parseFloat(amount);
+
+    if (!token || !userId) {
+        // Si por alguna razón no hay sesión, lo sacamos al login
+        window.location.href = '/logIn';
+        return;
+    }
 
     if (isNaN(amount) || amount <= 0) {
         Swal.fire({
@@ -65,39 +72,54 @@ function addBalance() {
         return;
     }
 
-    let data = {
-        id: userId,
-        amount: amount
-    }
-    data = JSON.stringify(data);
+    try {
+        const response = await fetch(STRIPE_LAMBDA_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                amount,
+                userId
+            })
+        });
 
-    xhr.open('PUT', getApiUrl(API_CONFIG.ENDPOINTS.BALANCE), false);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+        const data = await response.json();
 
-    
-    xhr.onload = function() {
-        if (xhr.status != 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        } else {
-            if (xhr.status === 200) {
-                let data = JSON.parse(xhr.responseText);
-                let balanceField = document.querySelector('#balanceField');
-                balanceField.innerHTML = data.balance.toFixed(2);
-                document.querySelector('#balance-form-deposit').value = '';
-            }
+        if (!response.ok) {
+            console.error('Error Lambda Stripe:', data);
+            Swal.fire({
+                icon: "error",
+                title: "Error al crear el pago",
+                text: data.error || 'No se pudo iniciar el pago con Stripe.',
+            });
+            return;
         }
-    };
-    xhr.send(data);
-    
-    Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Se ha hecho el depósito.",
-        showConfirmButton: false,
-        timer: 1500
-    });
-    showDepositForm();
+
+        if (!data.url) {
+            console.error('Respuesta sin URL de Stripe:', data);
+            Swal.fire({
+                icon: "error",
+                title: "Error al crear el pago",
+                text: "No se recibió la URL de pago.",
+            });
+            return;
+        }
+
+        // Opcional: limpiar campo antes de salir
+        document.querySelector('#balance-form-deposit').value = '';
+
+        // Redirige a la UI de Stripe Checkout
+        window.location.href = data.url;
+
+    } catch (error) {
+        console.error('Error llamando a la Lambda:', error);
+        Swal.fire({
+            icon: "error",
+            title: "Error de conexión",
+            text: "No se pudo conectar con el servicio de pagos.",
+        });
+    }
 }
 
 function withdrawBalance() {
@@ -161,4 +183,61 @@ function withdrawBalance() {
         timer: 1500
     });
     showDepositForm();
+}
+
+async function confirmStripeDepositIfNeeded() {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+
+    if (!sessionId) return;  // no venimos de Stripe
+
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    if (!token || !userId) return;
+
+    try {
+        const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.STRIPE_CONFIRM_DEPOSIT), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ sessionId })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Actualiza el balance en pantalla si el backend lo regresa
+            if (typeof data.balance !== 'undefined') {
+                const balanceField = document.querySelector('#balanceField');
+                balanceField.innerHTML = parseFloat(data.balance).toFixed(2);
+            }
+
+            Swal.fire({
+                icon: "success",
+                title: "Depósito confirmado",
+                text: "Tu saldo ha sido actualizado.",
+                timer: 1800,
+                showConfirmButton: false
+            });
+
+            // Limpia el session_id de la URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "No se pudo confirmar el depósito",
+                text: data.error || "Intenta más tarde.",
+            });
+        }
+    } catch (error) {
+        console.error('Error confirmando depósito Stripe:', error);
+        Swal.fire({
+            icon: "error",
+            title: "Error de conexión",
+            text: "No se pudo verificar el pago con el servidor.",
+        });
+    }
 }

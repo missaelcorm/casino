@@ -8,6 +8,8 @@ const API_CONFIG = {
         PROFILE: '/user/profile',
         BALANCE: '/user/balance',
         ACTIVITY: '/user/activity',
+
+        STRIPE_CONFIRM_DEPOSIT: '/payments/stripe/confirm-deposit',
         
         PROFILE_UPLOAD: '/profile/upload',
         PROFILE_DELETE: '/profile/delete',
