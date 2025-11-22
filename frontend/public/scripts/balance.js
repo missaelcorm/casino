@@ -1,5 +1,5 @@
 let tat;
-const STRIPE_LAMBDA_URL = 'https://sycaq5hi4lblejkdcsaeetceda0vgllp.lambda-url.us-east-1.on.aws/';
+const STRIPE_LAMBDA_URL = getStripeLambdaUrl();
 
 document.addEventListener('DOMContentLoaded', async () => {
     await confirmStripeDepositIfNeeded();
