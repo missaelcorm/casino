@@ -59,3 +59,9 @@ variable "cloudflare_zone_id" {
   type        = string
   description = "Cloudflare Zone ID"
 }
+
+variable "stripe_secret_key" {
+  description = "Stripe Secret Key"
+  type        = string
+  sensitive   = true
+}

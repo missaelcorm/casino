@@ -29,8 +29,32 @@ on:
         value: ${{ jobs.terraform-ci.outputs.tfplan-artifact-id }}
     
 jobs:
+  lambda-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Build Lambda Deployment Package
+        run: |
+          cd lambdas/payments
+          npm ci
+          npm run build
+
+      - name: Upload Lambda Payments Artifact
+        id: upload-lambda-zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-payments
+          path: ./lambdas/payments/lambda-payments.zip
+
   terraform-ci:
     runs-on: ubuntu-latest
+    needs: "lambda-ci"
     container: "missaelcorm/terratool:v0.10"
     outputs:
       tfplan-artifact-id: ${{ steps.upload.outputs.artifact-id }}
@@ -44,6 +68,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Lambda Payments Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: lambda-payments
+          path: ./lambdas/payments
 
       - name: Terraform Init
         id: init

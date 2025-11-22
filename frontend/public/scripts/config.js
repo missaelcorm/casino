@@ -8,6 +8,8 @@ const API_CONFIG = {
         PROFILE: '/user/profile',
         BALANCE: '/user/balance',
         ACTIVITY: '/user/activity',
+
+        STRIPE_CONFIRM_DEPOSIT: '/payments/stripe/confirm-deposit',
         
         PROFILE_UPLOAD: '/profile/upload',
         PROFILE_DELETE: '/profile/delete',
@@ -22,9 +24,14 @@ const API_CONFIG = {
         ASSETS_FONTS: '/assets/fonts',
         ASSETS_FILE: '/assets/file',
         ASSETS_LIST: '/assets/list'
-    }
+    },
+    STRIPE_LAMBDA_URL: window.ENV?.STRIPE_LAMBDA_URL
 };
 
 function getApiUrl(endpoint) {
     return API_CONFIG.BASE_URL + endpoint;
+}
+
+function getStripeLambdaUrl() {
+    return API_CONFIG.STRIPE_LAMBDA_URL;
 }

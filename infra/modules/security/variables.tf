@@ -27,3 +27,8 @@ variable "aws_secretsmanager_secret_app_jwt_secret_arn" {
   type        = string
   description = "ARN of the JWT secret in Secrets Manager"
 }
+
+variable "aws_secretsmanager_secret_stripe_secret_key_arn" {
+  type        = string
+  description = "ARN of the Stripe Secret Key in Secrets Manager"
+}

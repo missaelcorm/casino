@@ -65,8 +65,8 @@ resource "aws_internet_gateway" "main" {
 }
 
 resource "aws_eip" "nat" {
-  count = length(var.azs)
-  vpc   = true
+  count  = length(var.azs)
+  domain = "vpc"
 
   tags = merge(local.common_tags, {
     Name = "${local.name_prefix}-nat-eip-${var.azs[count.index]}"

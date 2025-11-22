@@ -8,6 +8,11 @@ ENV_FILE="/app/public/env.js"
 # Use default value if API_BASE_URL is not set
 API_URL="${API_BASE_URL:-http://localhost:3000/api}"
 
+if [[ -z "${STRIPE_LAMBDA_URL}" ]]; then
+    echo "STRIPE_LAMBDA_URL is not set"
+    return 1
+fi
+
 echo "Generating env.js with API_BASE_URL: $API_URL"
 
 # Create the env.js file
@@ -15,7 +20,8 @@ cat > $ENV_FILE << EOF
 // Runtime environment configuration
 // This file is generated at container startup
 window.ENV = {
-    API_BASE_URL: '${API_URL}'
+    API_BASE_URL: '${API_URL}',
+    STRIPE_LAMBDA_URL: '${STRIPE_LAMBDA_URL}'
 };
 EOF
 

@@ -24,3 +24,14 @@ output "backend_jwt_secret_arn" {
   description = "ARN of the Secrets Manager secret containing the JWT secret for the backend"
   value       = aws_secretsmanager_secret.app_jwt_secret.arn
 }
+
+output "stripe_secret_key_arn" {
+  description = "ARN of the Secrets Manager secret containing the Stripe Secret Key"
+  value       = aws_secretsmanager_secret.stripe_secret_key.arn
+}
+
+output "stripe_secret_key_value" {
+  description = "Stripe Secret Key value"
+  value       = var.stripe_secret_key
+  sensitive   = true
+}

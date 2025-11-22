@@ -29,3 +29,9 @@ variable "docdb_recovery_window_in_days" {
   type        = number
   default     = 7
 }
+
+variable "stripe_secret_key" {
+  description = "Stripe Secret Key"
+  type        = string
+  sensitive   = true
+}

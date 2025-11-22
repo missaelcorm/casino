@@ -26,6 +26,7 @@ module "security" {
   s3_user_uploads_bucket_arn                      = module.s3_user_uploads.bucket_arn
   aws_secretsmanager_secret_docdb_credentials_arn = module.secrets.docdb_secrets_manager_secret_arn
   aws_secretsmanager_secret_app_jwt_secret_arn    = module.secrets.backend_jwt_secret_arn
+  aws_secretsmanager_secret_stripe_secret_key_arn = module.secrets.stripe_secret_key_arn
 }
 
 # ECS Cluster
@@ -134,6 +135,10 @@ module "backend_service" {
     {
       name      = "JWT_SECRET"
       valueFrom = "${module.secrets.backend_jwt_secret_arn}:secretkey::"
+    },
+    {
+      name      = "STRIPE_SECRET_KEY"
+      valueFrom = "${module.secrets.stripe_secret_key_arn}:secretkey::"
     }
   ]
 
@@ -174,6 +179,10 @@ module "frontend_service" {
     {
       name  = "API_BASE_URL"
       value = "https://api-${local.app_domain}/api"
+    },
+    {
+      name  = "STRIPE_LAMBDA_URL"
+      value = module.lambda_payments.lambda_function_url
     }
   ]
 }
@@ -219,6 +228,7 @@ module "secrets" {
   docdb_host                    = module.documentdb.cluster_endpoint
   docdb_port                    = module.documentdb.cluster_port
   docdb_recovery_window_in_days = 0
+  stripe_secret_key             = var.stripe_secret_key
 }
 
 module "documentdb" {
@@ -238,4 +248,26 @@ module "documentdb" {
   deletion_protection     = false
   apply_immediately       = true
   tls_enabled             = true
+}
+
+module "lambda_payments" {
+  source = "../../modules/lambda-payments"
+
+  project     = var.project
+  environment = var.environment
+
+  lambda_package_path = "${path.root}/../../../lambdas/payments/lambda-payments.zip"
+  runtime             = "nodejs22.x"
+  timeout             = 30
+  memory_size         = 256
+
+  stripe_secret_arn = module.secrets.stripe_secret_key_arn
+  stripe_secret_key = module.secrets.stripe_secret_key_value
+  frontend_base_url = "https://${local.app_domain}"
+
+  cors_allowed_origins = [
+    "https://${local.app_domain}"
+  ]
+
+  log_retention_days = 14
 }
