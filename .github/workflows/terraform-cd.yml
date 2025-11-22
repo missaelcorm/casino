@@ -41,6 +41,12 @@ jobs:
           name: tfplan
           path: ${{ github.workspace }}/${{ inputs.working-directory }}
 
+      - name: Lambda Payments Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: lambda-payments
+          path: ${{ github.workspace }}/${{ inputs.working-directory }}/lambdas/payments
+
       - name: Terraform Init
         id: init
         working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}

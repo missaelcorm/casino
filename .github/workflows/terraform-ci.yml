@@ -51,6 +51,13 @@ jobs:
           npm ci
           npm run build
 
+      - name: Upload Lambda Payments Artifact
+        id: upload-lambda-zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-payments
+          path: ${{ inputs.working-directory }}/lambdas/payments/lambda-payments.zip
+
       - name: Terraform Init
         id: init
         working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
