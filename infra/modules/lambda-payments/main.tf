@@ -10,7 +10,7 @@ locals {
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = var.lambda_source_dir
-  output_path = "${path.module}/lambda_package.zip"
+  output_path = "${path.root}/lambda_package_${var.project}_${var.environment}.zip"
 }
 
 # IAM Role for Lambda execution
