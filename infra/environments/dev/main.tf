@@ -138,7 +138,7 @@ module "backend_service" {
     },
     {
       name      = "STRIPE_SECRET_KEY"
-      valueFrom = "${module.secrets.stripe_secret_key_arn}:secretkey"
+      valueFrom = "${module.secrets.stripe_secret_key_arn}:secretkey::"
     }
   ]
 
