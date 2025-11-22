@@ -255,7 +255,7 @@ module "lambda_payments" {
   project     = var.project
   environment = var.environment
 
-  lambda_source_dir = "${path.root}/../../lambdas/payments"
+  lambda_source_dir = "${path.root}/../../../lambdas/payments"
   runtime           = "nodejs22.x"
   timeout           = 30
   memory_size       = 256
