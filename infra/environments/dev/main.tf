@@ -26,6 +26,7 @@ module "security" {
   s3_user_uploads_bucket_arn                      = module.s3_user_uploads.bucket_arn
   aws_secretsmanager_secret_docdb_credentials_arn = module.secrets.docdb_secrets_manager_secret_arn
   aws_secretsmanager_secret_app_jwt_secret_arn    = module.secrets.backend_jwt_secret_arn
+  aws_secretsmanager_secret_stripe_secret_key_arn = module.secrets.stripe_secret_key_arn
 }
 
 # ECS Cluster

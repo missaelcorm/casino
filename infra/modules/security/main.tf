@@ -291,7 +291,10 @@ resource "aws_iam_role_policy" "execution_backend_task" {
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret"
         ]
-        Resource = [var.aws_secretsmanager_secret_app_jwt_secret_arn]
+        Resource = [
+          var.aws_secretsmanager_secret_app_jwt_secret_arn,
+          var.aws_secretsmanager_secret_stripe_secret_key_arn
+        ]
       }
     ]
   })
