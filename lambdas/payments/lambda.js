@@ -2,14 +2,19 @@ const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
-    // Ya NO ponemos Access-Control-Allow-Origin aquí.
-    // CORS lo maneja la URL de la función.
+    console.log('Lambda invoked');
+    console.log('Event:', JSON.stringify(event, null, 2));
+    console.log('Environment:', {
+        FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,
+        hasStripeKey: !!process.env.STRIPE_SECRET_KEY
+    });
+
     const headers = {
         "Content-Type": "application/json"
     };
 
-    // Si quieres, puedes incluso ignorar OPTIONS y dejar que CORS de AWS lo haga.
     if (event.httpMethod === 'OPTIONS') {
+        console.log('Handling OPTIONS preflight request');
         return {
             statusCode: 200,
             headers,
@@ -18,10 +23,14 @@ exports.handler = async (event) => {
     }
 
     try {
+        console.log('Processing payment request');
         const body = JSON.parse(event.body || '{}');
+        console.log('Request body:', body);
+
         const { amount, userId } = body;
 
         if (!amount || isNaN(amount) || amount <= 0) {
+            console.log('Invalid amount:', amount);
             return {
                 statusCode: 400,
                 headers,
@@ -30,7 +39,9 @@ exports.handler = async (event) => {
         }
 
         const amountInCents = Math.round(Number(amount) * 100);
+        console.log('Amount in cents:', amountInCents);
 
+        console.log('Creating Stripe checkout session');
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
@@ -55,6 +66,9 @@ exports.handler = async (event) => {
             },
         });
 
+        console.log('Stripe session created:', session.id);
+        console.log('Session URL:', session.url);
+
         return {
             statusCode: 200,
             headers,
@@ -65,11 +79,21 @@ exports.handler = async (event) => {
         };
 
     } catch (error) {
-        console.error("Error:", error);
+        console.error('Error processing payment:', error);
+        console.error('Error stack:', error.stack);
+        console.error('Error details:', {
+            message: error.message,
+            type: error.type,
+            code: error.code
+        });
+
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ error: "Algo ha fallado" })
+            body: JSON.stringify({
+                error: "Algo ha fallado",
+                details: error.message
+            })
         };
     }
 };
