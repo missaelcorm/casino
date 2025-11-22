@@ -47,8 +47,8 @@ exports.handler = async (event) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.SUCCESS_URL}?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: process.env.CANCEL_URL,
+            success_url: `${process.env.FRONTEND_BASE_URL}/balance/?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_BASE_URL}/balance?status=cancel`,
             metadata: {
                 userId: userId || '',
                 amount: String(amount),
@@ -69,7 +69,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ error: error.message })
+            body: JSON.stringify({ error: "Algo ha fallado" })
         };
     }
 };
