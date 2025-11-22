@@ -17,6 +17,9 @@ on:
       cloudflare_api_token:
         description: 'Cloudflare API Token'
         required: true
+      stripe_secret_key:
+        description: 'Stripe Secret Key'
+        required: true
       SLACK_WEBHOOK_URL:
         description: 'Slack Webhook Url'
         required: true
@@ -36,6 +39,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key }}
       TF_VAR_cloudflare_api_token: ${{ secrets.cloudflare_api_token }}
+      TF_VAR_stripe_secret_key: ${{ secrets.stripe_secret_key }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout code
