@@ -265,8 +265,7 @@ module "lambda_payments" {
   frontend_base_url = "https://${local.app_domain}"
 
   cors_allowed_origins = [
-    "https://${local.app_domain}",
-    "https://*.${local.app_domain}"
+    "https://${local.app_domain}"
   ]
 
   log_retention_days = 14
