@@ -88,9 +88,9 @@ resource "aws_lambda_function_url" "payments" {
   cors {
     allow_credentials = true
     allow_origins     = var.cors_allowed_origins
-    allow_methods     = ["GET", "POST", "OPTIONS"]
-    allow_headers     = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent"]
-    expose_headers    = ["x-amz-request-id", "x-amz-id-2"]
+    allow_methods     = ["*"]
+    allow_headers     = ["*"]
+    expose_headers    = ["*"]
     max_age          = 86400
   }
 }
