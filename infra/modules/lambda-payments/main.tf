@@ -65,7 +65,7 @@ resource "aws_lambda_function" "payments" {
   function_name    = "${var.project}-${var.environment}-payments"
   role             = aws_iam_role.lambda_execution_role.arn
   handler          = "lambda.handler"
-  source_code_hash = filebase64sha256(var.lambda_package_path)
+  source_code_hash = try(filebase64sha256(var.lambda_package_path), null)
   runtime          = var.runtime
   timeout          = var.timeout
   memory_size      = var.memory_size
