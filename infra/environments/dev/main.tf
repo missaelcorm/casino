@@ -270,6 +270,7 @@ module "lambda_payments" {
   environment = var.environment
 
   lambda_package_path = "${path.root}/../../../lambdas/payments/lambda-payments.zip"
+  lambda_hashes_path  = "${path.root}/../../../lambdas/payments/hashes.txt"
   runtime             = "nodejs22.x"
   timeout             = 30
   memory_size         = 256
