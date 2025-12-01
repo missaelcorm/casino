@@ -21,11 +21,11 @@ PACKAGE_JSON_SHA256=$(sha256sum ${SCRIPT_DIR}/package.json | awk '{print $1}')
 PACKAGE_LOCK_JSON_SHA256=$(sha256sum ${SCRIPT_DIR}/package-lock.json | awk '{print $1}')
 
 echo "SHA256: ${SCRIPT_DIR}/lambda.js"
-echo $SOURCE_CODE_SHA256 | tee -a "${OUTPUT_DIR}/${HASHES_FILE}"
+echo $SOURCE_CODE_SHA256 | tee -a "${SCRIPT_DIR}/${HASHES_FILE}"
 echo "SHA256: ${SCRIPT_DIR}/package.json"
-echo $PACKAGE_JSON_SHA256 | tee -a "${OUTPUT_DIR}/${HASHES_FILE}"
+echo $PACKAGE_JSON_SHA256 | tee -a "${SCRIPT_DIR}/${HASHES_FILE}"
 echo "SHA256: ${SCRIPT_DIR}/package-lock.json"
-echo $PACKAGE_LOCK_JSON_SHA256 | tee -a "${OUTPUT_DIR}/${HASHES_FILE}"
+echo $PACKAGE_LOCK_JSON_SHA256 | tee -a "${SCRIPT_DIR}/${HASHES_FILE}"
 
 # Install production dependencies
 echo "Installing production dependencies..."
