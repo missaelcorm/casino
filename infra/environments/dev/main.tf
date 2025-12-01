@@ -53,7 +53,11 @@ module "alb" {
   backend_health_check_path  = "/"
   frontend_health_check_path = "/"
 
-  depends_on = [module.acm]
+  # Alarms
+  enable_healthy_host_alarms = true
+  alarm_sns_topic_arn        = module.sns_alerts.topic_arn
+
+  depends_on = [module.acm, module.sns_alerts]
 }
 
 # Backend Service
@@ -187,6 +191,15 @@ module "frontend_service" {
   ]
 }
 
+# SNS Topic for Alerts
+module "sns_alerts" {
+  source = "../../modules/sns-alerts"
+
+  project      = var.project
+  environment  = var.environment
+  alert_emails = var.alert_emails
+}
+
 # Cloudflare DNS Records
 module "dns" {
   source = "../../modules/dns"
@@ -270,4 +283,34 @@ module "lambda_payments" {
   ]
 
   log_retention_days = 14
+
+  # Alarms
+  enable_error_alarm  = true
+  alarm_sns_topic_arn = module.sns_alerts.topic_arn
+}
+
+# CloudWatch Dashboard with automatic metrics
+module "monitoring" {
+  source = "../../modules/monitoring"
+
+  project     = var.project
+  environment = var.environment
+  aws_region  = var.aws_region
+
+  # ALB Metrics
+  alb_arn_suffix                      = module.alb.alb_arn_suffix
+  backend_target_group_arn_suffix     = module.alb.backend_target_group_arn_suffix
+  frontend_target_group_arn_suffix    = module.alb.frontend_target_group_arn_suffix
+
+  # Lambda Metrics
+  lambda_function_name                = module.lambda_payments.lambda_function_name
+
+  # DocumentDB Metrics
+  documentdb_cluster_id               = module.documentdb.cluster_id
+
+  depends_on = [
+    module.alb,
+    module.lambda_payments,
+    module.documentdb
+  ]
 }

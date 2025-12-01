@@ -17,3 +17,8 @@ output "cluster_instances" {
   description = "List of cluster instance IDs"
   value       = aws_docdb_cluster_instance.cluster_instances[*].id
 }
+
+output "cluster_id" {
+  description = "The DocumentDB cluster identifier"
+  value       = aws_docdb_cluster.default.cluster_identifier
+}

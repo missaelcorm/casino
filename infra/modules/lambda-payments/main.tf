@@ -102,3 +102,33 @@ resource "aws_cloudwatch_log_group" "lambda_logs" {
 
   tags = local.common_tags
 }
+
+# CloudWatch Alarm: Payment Lambda Errors (CRITICAL)
+resource "aws_cloudwatch_metric_alarm" "lambda_payment_errors" {
+  count               = var.enable_error_alarm ? 1 : 0
+  alarm_name          = "${var.project}-${var.environment}-lambda-payment-errors-critical"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 300 # 5 minutes
+  statistic           = "Sum"
+  threshold           = 3
+  alarm_description   = "CRITICAL: Payment Lambda has 3+ errors in 5 minutes. Check logs and Stripe integration immediately."
+  treat_missing_data  = "notBreaching"
+
+  dimensions = {
+    FunctionName = aws_lambda_function.payments.function_name
+  }
+
+  alarm_actions = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+  ok_actions    = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+
+  tags = merge(
+    local.common_tags,
+    {
+      Severity = "Critical"
+      Category = "Payments"
+    }
+  )
+}

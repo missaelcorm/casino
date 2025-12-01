@@ -40,3 +40,27 @@ output "cloudwatch_log_groups" {
     backend  = module.backend_service.cloudwatch_log_group_name
   }
 }
+
+output "monitoring_dashboard_url" {
+  description = "CloudWatch dashboard URL with all metrics"
+  value       = module.monitoring.dashboard_url
+}
+
+output "monitoring_dashboard_name" {
+  description = "CloudWatch dashboard name"
+  value       = module.monitoring.dashboard_name
+}
+
+output "sns_alerts_topic_arn" {
+  description = "ARN of SNS alerts topic"
+  value       = module.sns_alerts.topic_arn
+}
+
+output "critical_alarms" {
+  description = "ARNs of configured critical alarms"
+  value = {
+    lambda_payment_errors     = module.lambda_payments.lambda_error_alarm_arn
+    backend_no_healthy_hosts  = module.alb.backend_no_healthy_hosts_alarm_arn
+    frontend_no_healthy_hosts = module.alb.frontend_no_healthy_hosts_alarm_arn
+  }
+}

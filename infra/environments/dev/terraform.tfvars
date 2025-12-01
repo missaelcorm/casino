@@ -16,3 +16,7 @@ backend_image = {
   repository_url = "missaelcorm/friocasino-api"
   tag            = "7765199"
 }
+
+alert_emails = [
+  "roberto.cortes@iteso.mx"
+]

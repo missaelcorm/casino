@@ -241,3 +241,69 @@ resource "aws_cloudwatch_metric_alarm" "alb_4xx" {
 
 # Data Sources
 data "aws_elb_service_account" "main" {}
+
+# ============================================================================
+# CloudWatch Alarms: Healthy Hosts
+# ============================================================================
+
+# Backend No Healthy Hosts Alarm (CRITICAL)
+resource "aws_cloudwatch_metric_alarm" "backend_no_healthy_hosts" {
+  count               = var.enable_healthy_host_alarms ? 1 : 0
+  alarm_name          = "${local.name_prefix}-backend-no-healthy-hosts-critical"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "HealthyHostCount"
+  namespace           = "AWS/ApplicationELB"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 1
+  alarm_description   = "CRITICAL: Backend has NO healthy hosts. Service DOWN. Check ECS tasks and logs immediately."
+  treat_missing_data  = "breaching"
+
+  dimensions = {
+    TargetGroup  = aws_lb_target_group.backend.arn_suffix
+    LoadBalancer = aws_lb.main.arn_suffix
+  }
+
+  alarm_actions = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+  ok_actions    = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+
+  tags = merge(
+    local.common_tags,
+    {
+      Severity = "Critical"
+      Category = "Infrastructure"
+    }
+  )
+}
+
+# Frontend No Healthy Hosts Alarm (CRITICAL)
+resource "aws_cloudwatch_metric_alarm" "frontend_no_healthy_hosts" {
+  count               = var.enable_healthy_host_alarms ? 1 : 0
+  alarm_name          = "${local.name_prefix}-frontend-no-healthy-hosts-critical"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "HealthyHostCount"
+  namespace           = "AWS/ApplicationELB"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 1
+  alarm_description   = "CRITICAL: Frontend has NO healthy hosts. Website DOWN. Check ECS tasks and logs immediately."
+  treat_missing_data  = "breaching"
+
+  dimensions = {
+    TargetGroup  = aws_lb_target_group.frontend.arn_suffix
+    LoadBalancer = aws_lb.main.arn_suffix
+  }
+
+  alarm_actions = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+  ok_actions    = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+
+  tags = merge(
+    local.common_tags,
+    {
+      Severity = "Critical"
+      Category = "Infrastructure"
+    }
+  )
+}

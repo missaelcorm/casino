@@ -58,3 +58,15 @@ variable "log_retention_days" {
   type        = number
   default     = 14
 }
+
+variable "enable_error_alarm" {
+  description = "Enable CloudWatch alarm for Lambda errors"
+  type        = bool
+  default     = true
+}
+
+variable "alarm_sns_topic_arn" {
+  description = "ARN of SNS topic for alarm notifications"
+  type        = string
+  default     = ""
+}
