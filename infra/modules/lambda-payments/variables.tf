@@ -13,6 +13,11 @@ variable "lambda_package_path" {
   type        = string
 }
 
+variable "lambda_hashes_path" {
+  description = "Path to Lambda hashes text file"
+  type        = string
+}
+
 variable "runtime" {
   description = "Lambda runtime"
   type        = string

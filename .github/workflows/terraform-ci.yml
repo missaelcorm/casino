@@ -47,6 +47,13 @@ jobs:
         with:
           name: lambda-payments
           path: ./lambdas/payments/lambda-payments.zip
+      
+      - name: Upload Lambda Payments Hashes Artifact
+        id: upload-lambda-hashes-zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-hashes-payments
+          path: ./lambdas/payments/hashes.txt
 
   terraform-ci:
     runs-on: ubuntu-latest

@@ -13,6 +13,15 @@ echo "Building Lambda deployment package..."
 rm -rf "${OUTPUT_DIR}"
 mkdir -p "${OUTPUT_DIR}"
 
+# Generate Hashes
+SOURCE_CODE_SHA256=$(sha256 ${SCRIPT_DIR}/lambda.js | awk -F'=' '{print $2}')
+PACKAGE_JSON_SHA256=$(sha256 ${SCRIPT_DIR}/package.json | awk -F'=' '{print $2}')
+PACKAGE_LOCK_JSON_SHA256=$(sha256 ${SCRIPT_DIR}/package-lock.json | awk -F'=' '{print $2}')
+
+echo $SOURCE_CODE_SHA256 >> "${OUTPUT_DIR}/hashes.txt"
+echo $PACKAGE_JSON_SHA256 >> "${OUTPUT_DIR}/hashes.txt"
+echo $PACKAGE_LOCK_JSON_SHA256 >> "${OUTPUT_DIR}/hashes.txt"
+
 # Install production dependencies
 echo "Installing production dependencies..."
 npm ci --production --prefix "${SCRIPT_DIR}"
