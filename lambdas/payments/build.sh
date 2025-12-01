@@ -6,6 +6,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUTPUT_DIR="${SCRIPT_DIR}/dist"
 PACKAGE_NAME="lambda-payments.zip"
+HASHES_FILE="hashes.txt"
 
 echo "Building Lambda deployment package..."
 
@@ -14,13 +15,17 @@ rm -rf "${OUTPUT_DIR}"
 mkdir -p "${OUTPUT_DIR}"
 
 # Generate Hashes
-SOURCE_CODE_SHA256=$(sha256 ${SCRIPT_DIR}/lambda.js | awk -F'=' '{print $2}')
-PACKAGE_JSON_SHA256=$(sha256 ${SCRIPT_DIR}/package.json | awk -F'=' '{print $2}')
-PACKAGE_LOCK_JSON_SHA256=$(sha256 ${SCRIPT_DIR}/package-lock.json | awk -F'=' '{print $2}')
+echo "Generating hashes..."
+SOURCE_CODE_SHA256=$(sha256sum ${SCRIPT_DIR}/lambda.js | awk '{print $1}')
+PACKAGE_JSON_SHA256=$(sha256sum ${SCRIPT_DIR}/package.json | awk '{print $1}')
+PACKAGE_LOCK_JSON_SHA256=$(sha256sum ${SCRIPT_DIR}/package-lock.json | awk '{print $1}')
 
-echo $SOURCE_CODE_SHA256 >> "${OUTPUT_DIR}/hashes.txt"
-echo $PACKAGE_JSON_SHA256 >> "${OUTPUT_DIR}/hashes.txt"
-echo $PACKAGE_LOCK_JSON_SHA256 >> "${OUTPUT_DIR}/hashes.txt"
+echo "SHA256: ${SCRIPT_DIR}/lambda.js"
+echo $SOURCE_CODE_SHA256 | tee -a "${OUTPUT_DIR}/${HASHES_FILE}"
+echo "SHA256: ${SCRIPT_DIR}/package.json"
+echo $PACKAGE_JSON_SHA256 | tee -a "${OUTPUT_DIR}/${HASHES_FILE}"
+echo "SHA256: ${SCRIPT_DIR}/package-lock.json"
+echo $PACKAGE_LOCK_JSON_SHA256 | tee -a "${OUTPUT_DIR}/${HASHES_FILE}"
 
 # Install production dependencies
 echo "Installing production dependencies..."
