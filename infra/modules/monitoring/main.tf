@@ -156,25 +156,22 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric"
         properties = {
           metrics = [
-            ["AWS/Lambda", "Duration", {
-              stat         = "Average"
-              label        = "Average Duration"
-              color        = "#2ca02c"
-              FunctionName = var.lambda_function_name
+            ["AWS/Lambda", "Duration", "FunctionName", var.lambda_function_name, {
+              stat  = "Average"
+              label = "Average Duration"
+              color = "#2ca02c"
             }],
-            [".", "Errors", {
-              stat         = "Sum"
-              label        = "Errors"
-              color        = "#d62728"
-              FunctionName = var.lambda_function_name
-              yAxis        = "right"
+            [".", "Errors", ".", ".", {
+              stat  = "Sum"
+              label = "Errors"
+              color = "#d62728"
+              yAxis = "right"
             }],
-            [".", "Invocations", {
-              stat         = "Sum"
-              label        = "Invocations"
-              color        = "#1f77b4"
-              FunctionName = var.lambda_function_name
-              yAxis        = "right"
+            [".", "Invocations", ".", ".", {
+              stat  = "Sum"
+              label = "Invocations"
+              color = "#1f77b4"
+              yAxis = "right"
             }]
           ]
           view    = "timeSeries"
@@ -202,33 +199,25 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric"
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "HealthyHostCount", {
-              stat            = "Average"
-              label           = "Backend Healthy"
-              color           = "#2ca02c"
-              TargetGroup     = var.backend_target_group_arn_suffix
-              LoadBalancer    = var.alb_arn_suffix
+            ["AWS/ApplicationELB", "HealthyHostCount", "TargetGroup", var.backend_target_group_arn_suffix, "LoadBalancer", var.alb_arn_suffix, {
+              stat  = "Average"
+              label = "Backend Healthy"
+              color = "#2ca02c"
             }],
-            [".", "UnHealthyHostCount", {
-              stat            = "Average"
-              label           = "Backend Unhealthy"
-              color           = "#d62728"
-              TargetGroup     = var.backend_target_group_arn_suffix
-              LoadBalancer    = var.alb_arn_suffix
+            [".", "UnHealthyHostCount", ".", ".", ".", ".", {
+              stat  = "Average"
+              label = "Backend Unhealthy"
+              color = "#d62728"
             }],
-            [".", "HealthyHostCount", {
-              stat            = "Average"
-              label           = "Frontend Healthy"
-              color           = "#17becf"
-              TargetGroup     = var.frontend_target_group_arn_suffix
-              LoadBalancer    = var.alb_arn_suffix
+            [".", "HealthyHostCount", ".", var.frontend_target_group_arn_suffix, ".", ".", {
+              stat  = "Average"
+              label = "Frontend Healthy"
+              color = "#17becf"
             }],
-            [".", "UnHealthyHostCount", {
-              stat            = "Average"
-              label           = "Frontend Unhealthy"
-              color           = "#ff7f0e"
-              TargetGroup     = var.frontend_target_group_arn_suffix
-              LoadBalancer    = var.alb_arn_suffix
+            [".", "UnHealthyHostCount", ".", ".", ".", ".", {
+              stat  = "Average"
+              label = "Frontend Unhealthy"
+              color = "#ff7f0e"
             }]
           ]
           view    = "timeSeries"
@@ -253,18 +242,16 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric"
         properties = {
           metrics = [
-            ["AWS/DocDB", "DatabaseConnections", {
-              stat                = "Average"
-              label               = "Active Connections"
-              color               = "#1f77b4"
-              DBClusterIdentifier = var.documentdb_cluster_id
+            ["AWS/DocDB", "DatabaseConnections", "DBClusterIdentifier", var.documentdb_cluster_id, {
+              stat  = "Average"
+              label = "Active Connections"
+              color = "#1f77b4"
             }],
-            [".", "CPUUtilization", {
-              stat                = "Average"
-              label               = "CPU Utilized"
-              color               = "#ff7f0e"
-              DBClusterIdentifier = var.documentdb_cluster_id
-              yAxis               = "right"
+            [".", "CPUUtilization", ".", ".", {
+              stat  = "Average"
+              label = "CPU Utilized"
+              color = "#ff7f0e"
+              yAxis = "right"
             }]
           ]
           view    = "timeSeries"
