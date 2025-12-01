@@ -8,7 +8,7 @@ resource "aws_cloudwatch_dashboard" "main" {
 
   dashboard_body = jsonencode({
     widgets = [
-      # 1. Application Latency
+      # Application Latency
       {
         type = "metric"
         properties = {
@@ -31,7 +31,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
-          title   = "1. Response Latency (ALB)"
+          title   = "Response Latency (ALB)"
           period  = 300
           yAxis = {
             left = {
@@ -45,7 +45,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 0
       },
 
-      # 2. Traffic Volume
+      # Traffic Volume
       {
         type = "metric"
         properties = {
@@ -59,7 +59,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
-          title   = "2. Traffic Volume (Requests/min)"
+          title   = "Traffic Volume (Requests/min)"
           period  = 300
           yAxis = {
             left = {
@@ -73,7 +73,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 0
       },
 
-      # 3. Error Rate
+      # Error Rate
       {
         type = "metric"
         properties = {
@@ -100,7 +100,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           view    = "timeSeries"
           stacked = true
           region  = var.aws_region
-          title   = "3. HTTP Error Rate"
+          title   = "HTTP Error Rate"
           period  = 300
           yAxis = {
             left = {
@@ -114,7 +114,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 6
       },
 
-      # 4. CPU and Memory Usage (Container Insights)
+      # CPU and Memory Usage (Container Insights)
       {
         type = "metric"
         properties = {
@@ -134,7 +134,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
-          title   = "4. Resource Usage (ECS Container Insights)"
+          title   = "Resource Usage (ECS Container Insights)"
           period  = 300
           yAxis = {
             left = {
@@ -151,7 +151,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 6
       },
 
-      # 5. Lambda Performance (Payments)
+      # Lambda Performance (Payments)
       {
         type = "metric"
         properties = {
@@ -177,7 +177,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
-          title   = "5. Payment Lambda - Performance"
+          title   = "Payment Lambda - Performance"
           period  = 300
           yAxis = {
             left = {
@@ -194,7 +194,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 12
       },
 
-      # BONUS: Target Groups Health Status
+      # Target Groups Health Status
       {
         type = "metric"
         properties = {
@@ -223,7 +223,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
-          title   = "BONUS: Services Health Status"
+          title   = "Services Health Status"
           period  = 300
           yAxis = {
             left = {
@@ -237,7 +237,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 12
       },
 
-      # BONUS: DocumentDB Connections
+      # DocumentDB Connections
       {
         type = "metric"
         properties = {
@@ -257,7 +257,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
-          title   = "BONUS: DocumentDB - Connections and CPU"
+          title   = "DocumentDB - Connections and CPU"
           period  = 300
           yAxis = {
             left = {
@@ -274,18 +274,18 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 18
       },
 
-      # BONUS: ECS Logs Query Results
+      # Payments Lambda Logs Query Results
       {
         type = "log"
         properties = {
           query   = <<-EOT
-            SOURCE '/ecs/${local.name_prefix}-cluster'
+            SOURCE '/aws/lambda/${var.lambda_function_name}'
             | fields @timestamp, @message
             | filter @message like /ERROR/
             | stats count() by bin(5m)
           EOT
           region  = var.aws_region
-          title   = "BONUS: Errors in ECS Logs (last 3h)"
+          title   = "Errors in Payments Lambda Logs (last 3h)"
         }
         width  = 12
         height = 6
