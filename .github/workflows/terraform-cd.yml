@@ -35,12 +35,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download Terraform Plan Artifact
-        uses: actions/download-artifact@master
-        with:
-          name: tfplan
-          path: ${{ github.workspace }}/${{ inputs.working-directory }}
-
       - name: Lambda Payments Artifact
         uses: actions/download-artifact@master
         with:
@@ -57,7 +51,7 @@ jobs:
         id: apply
         working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
         run: |
-          terraform apply -input=false -auto-approve tfplan
+          terraform apply -input=false -auto-approve
 
       - name: Send notification to Slack
         uses: ./.github/actions/slack-notify

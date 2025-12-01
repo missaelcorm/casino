@@ -23,10 +23,6 @@ on:
       SLACK_WEBHOOK_URL:
         description: 'Slack Webhook Url'
         required: true
-    outputs:  
-      tfplan-artifact-id:
-        description: 'Terraform Plan Artifact ID'
-        value: ${{ jobs.terraform-ci.outputs.tfplan-artifact-id }}
     
 jobs:
   lambda-ci:
@@ -56,8 +52,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: "lambda-ci"
     container: "missaelcorm/terratool:v0.10"
-    outputs:
-      tfplan-artifact-id: ${{ steps.upload.outputs.artifact-id }}
     env:
       TF_LOG: INFO
       AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id }}
@@ -104,14 +98,7 @@ jobs:
         id: plan
         working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
         run: |
-          terraform plan -input=false -compact-warnings -out=tfplan
-        
-      - name: Upload Terraform Plan Artifact
-        id: upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: ${{ inputs.working-directory }}/tfplan
+          terraform plan -input=false -compact-warnings
 
       - name: Send notification to Slack
         uses: ./.github/actions/slack-notify
