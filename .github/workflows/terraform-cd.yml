@@ -45,7 +45,7 @@ jobs:
       - name: Lambda Payments Hashes Artifact
         uses: actions/download-artifact@master
         with:
-          name: lambda-hashes-payments
+          name: lambda-payments-hashes
           path: ./lambdas/payments
 
       - name: Terraform Init
