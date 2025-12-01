@@ -298,15 +298,15 @@ module "monitoring" {
   aws_region  = var.aws_region
 
   # ALB Metrics
-  alb_arn_suffix                      = module.alb.alb_arn_suffix
-  backend_target_group_arn_suffix     = module.alb.backend_target_group_arn_suffix
-  frontend_target_group_arn_suffix    = module.alb.frontend_target_group_arn_suffix
+  alb_arn_suffix                   = module.alb.alb_arn_suffix
+  backend_target_group_arn_suffix  = module.alb.backend_target_group_arn_suffix
+  frontend_target_group_arn_suffix = module.alb.frontend_target_group_arn_suffix
 
   # Lambda Metrics
-  lambda_function_name                = module.lambda_payments.lambda_function_name
+  lambda_function_name = module.lambda_payments.lambda_function_name
 
   # DocumentDB Metrics
-  documentdb_cluster_id               = module.documentdb.cluster_id
+  documentdb_cluster_id = module.documentdb.cluster_id
 
   depends_on = [
     module.alb,
