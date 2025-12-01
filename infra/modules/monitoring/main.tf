@@ -13,7 +13,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric"
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "TargetResponseTime", {
+            ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", var.alb_arn_suffix, {
               stat    = "Average"
               label   = "Average Latency"
               color   = "#2ca02c"
@@ -50,7 +50,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric"
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "RequestCount", {
+            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", var.alb_arn_suffix, {
               stat   = "Sum"
               label  = "Total Requests"
               period = 60
@@ -78,19 +78,19 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric"
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", {
+            ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, {
               stat   = "Sum"
               label  = "5xx Errors (Backend)"
               color  = "#d62728"
               period = 60
             }],
-            [".", "HTTPCode_Target_4XX_Count", {
+            [".", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix, {
               stat   = "Sum"
               label  = "4xx Errors (Client)"
               color  = "#ff7f0e"
               period = 60
             }],
-            [".", "HTTPCode_ELB_5XX_Count", {
+            [".", "HTTPCode_ELB_5XX_Count", "LoadBalancer", var.alb_arn_suffix, {
               stat   = "Sum"
               label  = "5xx Errors (ALB)"
               color  = "#9467bd"
@@ -124,7 +124,7 @@ resource "aws_cloudwatch_dashboard" "main" {
               label = "CPU Utilized"
               color = "#1f77b4"
             }],
-            [".", "MemoryUtilized", {
+            [".", "MemoryUtilized", "ClusterName", var.ecs_cluster_name, {
               stat  = "Average"
               label = "Memory Utilized"
               color = "#ff7f0e"
