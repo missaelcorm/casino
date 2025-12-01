@@ -23,6 +23,11 @@ variable "alb_arn_suffix" {
   type        = string
 }
 
+variable "ecs_cluster_name" {
+  description = "ECS Cluster Name"
+  type = string
+}
+
 variable "backend_target_group_arn_suffix" {
   description = "ARN suffix of the backend target group"
   type        = string

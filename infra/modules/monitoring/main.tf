@@ -119,7 +119,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric"
         properties = {
           metrics = [
-            ["ECS/ContainerInsights", "CpuUtilized", {
+            ["ECS/ContainerInsights", "CpuUtilized", "ClusterName", var.ecs_cluster_name, {
               stat  = "Average"
               label = "CPU Utilized"
               color = "#1f77b4"

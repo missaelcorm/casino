@@ -302,6 +302,9 @@ module "monitoring" {
   backend_target_group_arn_suffix  = module.alb.backend_target_group_arn_suffix
   frontend_target_group_arn_suffix = module.alb.frontend_target_group_arn_suffix
 
+  # ECS Metrics
+  ecs_cluster_name = module.ecs_cluster.cluster_name
+
   # Lambda Metrics
   lambda_function_name = module.lambda_payments.lambda_function_name
 
