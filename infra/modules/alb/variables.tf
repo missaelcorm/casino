@@ -44,3 +44,15 @@ variable "app_domain" {
   type        = string
   description = "App domain"
 }
+
+variable "enable_healthy_host_alarms" {
+  type        = bool
+  description = "Enable CloudWatch alarms for healthy host count"
+  default     = true
+}
+
+variable "alarm_sns_topic_arn" {
+  type        = string
+  description = "ARN of SNS topic for alarm notifications"
+  default     = ""
+}

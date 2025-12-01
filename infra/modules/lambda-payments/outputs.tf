@@ -22,3 +22,13 @@ output "lambda_role_name" {
   description = "Name of the Lambda execution role"
   value       = aws_iam_role.lambda_execution_role.name
 }
+
+output "lambda_error_alarm_arn" {
+  description = "ARN of Lambda error alarm (if enabled)"
+  value       = var.enable_error_alarm ? aws_cloudwatch_metric_alarm.lambda_payment_errors[0].arn : null
+}
+
+output "lambda_error_alarm_name" {
+  description = "Name of Lambda error alarm (if enabled)"
+  value       = var.enable_error_alarm ? aws_cloudwatch_metric_alarm.lambda_payment_errors[0].alarm_name : null
+}

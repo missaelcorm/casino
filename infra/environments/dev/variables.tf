@@ -65,3 +65,9 @@ variable "stripe_secret_key" {
   type        = string
   sensitive   = true
 }
+
+variable "alert_emails" {
+  description = "List of email addresses to receive CloudWatch alerts (empty list for no email notifications)"
+  type        = list(string)
+  default     = []
+}
